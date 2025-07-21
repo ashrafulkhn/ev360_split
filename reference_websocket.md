@@ -302,4 +302,302 @@ Answered with response – stopCharging.
 
 ---
 
-<!-- Continue copying and reformatting the rest of the document as needed. -->
+
+#### 3.3 Response Messages
+Response messages are sent by both the SECC and the PECC. They have the following fields:
+
+| Field Name      | Field Type   | Description                                                        |
+|-----------------|--------------|--------------------------------------------------------------------|
+| type            | messageType  | Identifies the type of the PEP message. Set to "response".        |
+| kind            | kindType     | Set to the kind of the request this message responds to.           |
+| sequenceNumber  | integer      | Used to match request and response/error messages.                 |
+| payload         | JSON         | Payload of the message kind. Empty object {} if not required.      |
+
+**Example (configuration):**
+```json
+{
+  "type": "response",
+  "kind": "configuration",
+  "sequenceNumber": 458238,
+  "payload": {
+    "firmwareVersion": "pe_1.0.2",
+    "manufacturer": "pe_manufacturer1",
+    "limitVoltageMin": 0,
+    "limitVoltageMax": 700,
+    "limitCurrentMin": 0,
+    "limitCurrentMax": 50,
+    "limitPowerMin": 0,
+    "limitPowerMax": 30000,
+    "limitDischargeCurrentMin": 0,
+    "limitDischargeCurrentMax": -30,
+    "limitDischargePowerMin": 0,
+    "limitDischargePowerMax": -15000,
+    "floatValues": true
+  }
+}
+```
+
+**Example (cableCheck):**
+```json
+{
+  "type": "response",
+  "kind": "cableCheck",
+  "sequenceNumber": 458238,
+  "payload": {}
+}
+```
+
+**Example (targetValues):**
+```json
+{
+  "type": "response",
+  "kind": "targetValues",
+  "sequenceNumber": 458238,
+  "payload": {}
+}
+```
+
+**Example (getInput):**
+```json
+{
+  "type": "response",
+  "kind": "getInput",
+  "sequenceNumber": 458238,
+  "payload": {
+    "inputValues": {
+      "d1": 1,
+      "a1": 5.2,
+      "t3": 40
+    }
+  }
+}
+```
+
+---
+
+#### 3.4 Error Messages
+Error messages are sent as answers to request messages. They SHALL be sent if a problem with the request itself or the requested action occurs. Possible problems include failed syntax validation or invalid requested values. The most appropriate errorCategory should be chosen and the errorDetails field filled with an additional error description.
+
+| Field Name      | Field Type   | Description                                                        |
+|-----------------|--------------|--------------------------------------------------------------------|
+| type            | messageType  | Identifies the type of the PEP message. Set to "error".           |
+| kind            | kindType     | Set to the respective kind from the request this message answers.   |
+| sequenceNumber  | integer      | Used to match request and response/error messages. Set to 0 if sequence number of the request could not be determined. |
+| payload         | JSON         | Contains details of the error.                                     |
+
+**Payload fields:**
+| Payload Field Name | Field Type         | Description                  |
+|--------------------|-------------------|------------------------------|
+| errorCategory      | errorCategoryType | Category of the error.       |
+| errorDetails       | string            | Detailed description or "".  |
+
+**Example:**
+```json
+{
+  "type": "error",
+  "kind": "cableCheck",
+  "sequenceNumber": 458238,
+  "payload": {
+    "errorCategory": "format",
+    "errorDetails": "JSON schema validation failed at line 5."
+  }
+}
+```
+
+---
+
+#### 3.5 Informational Messages
+Informational messages are sent by both SECC and PECC and have the following fields:
+
+| Field Name      | Field Type   | Description                                                        |
+|-----------------|--------------|--------------------------------------------------------------------|
+| type            | messageType  | Identifies the type of the PEP message. Set to "info".            |
+| kind            | kindType     | Identifies the kind of the message and layout of the payload field.|
+| payload         | JSON         | Payload of the message kind. Empty object {} if not required.      |
+
+**Example (event):**
+```json
+{
+  "type": "info",
+  "kind": "event",
+  "payload": {
+    "eventDetails": "vendor specific description of an event"
+  }
+}
+```
+
+**Example (status):**
+```json
+{
+  "type": "info",
+  "kind": "status",
+  "payload": {
+    "measuredVoltage": 599,
+    "measuredCurrent": 19,
+    "drivenVoltage": 600,
+    "drivenCurrent": 20,
+    "temperature": 34.72,
+    "contactorsStatus": "closed",
+    "isolationStatus": "valid",
+    "operationalStatus": "operative"
+  }
+}
+```
+
+**Example (evConnectionState):**
+```json
+{
+  "type": "info",
+  "kind": "evConnectionState",
+  "payload": {
+    "evConnectionState": "connected",
+    "vehicleId": "AB:CD:12:34:56:78"
+  }
+}
+```
+
+**Example (chargingSession):**
+```json
+{
+  "type": "info",
+  "kind": "chargingSession",
+  "payload": {
+    "chargingProfileMaxPowerLimitWatts": 150000.0
+  }
+}
+```
+
+---
+
+#### 3.6 Sequence Numbers
+Sequence numbers are used to match requests to their respective replies, either response or error messages. The sequence number sent in requests SHALL be incremented for each request by 1, its value increases monotonically. If the valid range is exceeded, counting SHALL restart from 1. The sequence number in replies SHALL be set to the same value of the sequenceNumber field in the request it answers. There are two sequence numbers, one for each request direction. They are increased independently.
+
+Regular sequence numbers are valid in the range from 1 to 2147483647 (2^31 - 1) inclusive.
+
+---
+
+#### 3.7 Type Definitions
+**messageType:**
+- info: Sent by both SECC and PECC. An info message does not get responded to.
+- request: Sent by both SECC and PECC. Gets responded to with a response or error.
+- response: Sent by both SECC and PECC. Response to a valid request.
+- error: Sent by both SECC and PECC. Response to an invalid request.
+
+**kindType:**
+- configuration: Identifies messages required for the configuration report mechanism.
+- cableCheck: Identifies messages required for an isolation check.
+- targetValues: Identifies messages required for supplying of a voltage and current.
+- contactorsStatus: Identifies messages required for a contactor state change.
+- reset: Identifies messages required for the reset mechanism.
+- getInput: Identifies messages required for input readout.
+- setOutput: Identifies messages required for setting outputs.
+- error: Identifies messages required for error handling.
+- event: Identifies messages that report a generic, vendor-specific event.
+- status: Identifies messages that report the current status.
+- evConnectionState: Identifies messages that report the current EV connection state.
+- stopCharging: Identifies messages sent by the PECC to stop charging.
+- chargingSession: Identifies messages containing information about the current charging session.
+
+**contactorsStatusType:**
+- open: Contactors are open.
+- closed: Contactors are closed.
+
+**isolationStatusType:**
+- invalid: No isolation test has been carried out yet.
+- valid: Isolation test completed without warning or fault.
+- warning: Isolation test resulted with a measured isolation resistance below the warning level defined in IEC CDV 61851-23.
+- fault: Isolation test resulted with a measured isolation resistance below the fault level defined in IEC CDV 61851-23.
+
+**operationalStatusType:**
+- operative: Power electronics is able to supply voltage or power. Normal state of operation.
+- inoperative: Power electronics is not able to supply voltage or power.
+
+**chargingStateType:**
+- standby: No charging process started yet.
+- preCharge: EV is pre-charging.
+- charge: EV is charging.
+- postCharge: EV completed charging and is in a post-charging state. EV welding detection may be conducted in this state.
+
+**errorCategoryType:**
+- format: Message format is incorrect, i.e., the JSON schema validation fails.
+- value: Invalid input/output identifier or requested voltage could not be supplied.
+- inoperative: The power electronics is not able to execute the request due to its current operationalStatus.
+- internal: An error internal to PECC or SECC occurred which prevented the processing of the request.
+- generic: Any other error not covered by other categories in this table.
+
+**evConnectionStateType:**
+- disconnected: No connection to an EV (not plugged in).
+- connected: EV connected (plugged in).
+- energyTransferAllowed: Energy transfer to the EV is allowed.
+- error: An error has occurred, e.g. short circuit between control pilot and protective conductor, SECC inoperative, ...
+
+---
+
+### 4. Timing Recommendations
+SECC and PECC SHOULD comply with the following PEP timings:
+
+| Name                        | Value [ms] | Description                                 |
+|-----------------------------|------------|---------------------------------------------|
+| PEP_REQUEST_TIMEOUT         | 500        |                                            |
+| PEP_WS_RECONNECT_INTERVAL   | 10000      |                                            |
+| PEP_STATUS_UPDATE_INTERVAL  | 200        |                                            |
+| PEP_SECC_UNRESPONSIVE_TIMEOUT | 5000     |                                            |
+
+---
+
+### 5. Error Handling
+The goal of PEP error handling is the prevention of a failure condition or the recovery from an invalid state (possibly distributed across SECC and PECC) to a safe, well-defined and stable state. This well-defined state is called the standby state and characterized by the following properties visible to the SECC:
+
+| Property           | Physical Unit/Type         | Description                                 | Value                |
+|--------------------|---------------------------|---------------------------------------------|----------------------|
+| measuredVoltage    | V/Volts                   | Voltage measured at the outlet.             | Within local regulations for touch voltage. E.g.: IEC 61851-1: ≤ 60 V |
+| measuredCurrent    | A/Amperes                 | Current measured at the outlet.             | 0                    |
+| drivenVoltage      | V/Volts                   | Voltage driven at the output.               | 0                    |
+| drivenCurrent      | A/Amperes                 | Current driven at the output.               | 0                    |
+| temperature        | °C/Degrees Celsius        | Current temperature at the outlet.          | within PE operation limits |
+| contactorsStatus   | contactorsStatusType      | Current status of the contactors.           | open                 |
+| isolationStatus    | isolationStatusType       | Current isolation status of the cable.      | <neglected>          |
+| operationalStatus  | operationalStatusType     | Current operational status of the power electronics as a whole. | operative |
+
+If an invalid state is detected by the PECC, the operationalStatus SHALL be set to "inoperative". If the error condition is remedied, the operationalStatus SHALL be set to “operative”.
+
+---
+
+### 6. Example Scenarios
+#### 6.1 Charging Sequence
+> The SECC opens a WebSocket connection to the PECC.
+> As soon as the WebSocket connection is established, the info – status message is sent periodically.
+> The configuration can be requested once or periodically by the SECC at any time.
+> The EV triggers the charging process.
+> The cable check result "valid" is needed to continue.
+> In the pre-charging phase, multiple targetValues requests may be received by the PECC.
+> The charging phase begins as soon as a targetValues request is received with chargingState set to "charge".
+> The charging process ends with a targetValues request with the chargingState set to "postCharge". The requested voltage and current is set to 0. The EV may then perform an optional welding detection of its internal contactors. After this phase, the reset request is sent and the EV unplugs.
+> The evConnectionState message gets sent when the EV signals the corresponding state.
+
+#### 6.2 Input/Output Control
+> Accessing inputs and outputs is not part of the charging process.
+> getInput and setOutput requests can be sent anytime.
+
+---
+
+### 7. PECC State Machine Proposal
+The following state machine is a suggestion and meant as implementation hint. It is NOT required to implement the PECC in exactly this manner. Note that various mechanisms and PEP messages are not included, such as the error messages and the PECC-internal error handling itself.
+
+> A charging procedure begins with the contactorsStatus request with contactorsStatus set to "closed".
+> The current charging phase (preCharge, charge, postCharge) is reported by the targetValues request.
+> The reset request may be received anytime while charging. The "reset" state shown is meant as a cleanup and reinitialization state. See Error Handling for details. In addition, the reset request is the normal (i.e., non-erroneous) transition from the postCharge state to the standby state.
+
+---
+
+### 8. Appendix
+#### 8.1 IEC 61851 Control Pilot (CP) / Proximity Pin (PP) Supervision
+The IEC 61851 and SAE J1772 standards impose strict safety requirements on the charging process and power supply monitoring. The charging process is controlled by the EV which sets a specific Control Pilot (CP) state. Six state categories exist: Ax, Bx, Cx, Dx, E and F. Energy transfer is allowed only in state categories Cx and Dx. In some cases (e.g. CCS Type 1) a PP supervision is also required to prevent energy transfer when the PP signal is not valid.
+
+In order to implement this, the SECC provides a logical output called CP/PP supervision. This output controls the power electronics’ ability to energize its outlet. Conceptually, a logical AND conjunction exists in the power electronics between the PECC control input and CP/PP supervision: The PE is able to close its contactors if and only if the CP/PP supervision allows it, i.e., the CP state category is Cx or Dx and PP signal is valid (if applicable).
+
+If a contactorsStatus request could not be processed due to the CP/PP supervision, an error message with the errorCategory set to "internal" should be sent.
+
+---
+
+<!-- End of reformatted protocol document. -->
