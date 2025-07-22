@@ -205,49 +205,35 @@ Start
 ```
 
 ```plaintext
-+-------------------+         +-------------------+         +-------------------+
-|                   |         |                   |         |                   |
-|   SECC #1         |  ...    |   SECC #N         |         |   SECC #6         |
-| (WebSocket Client)|         | (WebSocket Client)|         | (WebSocket Client)|
-+--------+----------+         +--------+----------+         +--------+----------+
-         |                             |                             |
-         |                             |                             |
-         +-----------------------------+-----------------------------+
-                                       |
-                                       v
-                          +-------------------------------+
-                          |        PECC WebSocket         |
-                          |         Server Layer          |
-                          +-------------------------------+
-                                       |
-                                       v
-                +---------------------------------------------------+
-                |                 SECC Connection Handler           |
-                |  (One per SECC, manages all guns/sessions)        |
-                +---------------------------------------------------+
-                  |         |         |         |         |         |
-                  v         v         v         v         v         v
-           +---------+ +---------+ ... +---------+ ... +---------+ +---------+
-           | Gun #1  | | Gun #2  |     | Gun #n  |     | Gun #12 | | Gun #n  |
-           | Session | | Session |     | Session |     | Session | | Session |
-           +---------+ +---------+     +---------+     +---------+ +---------+
-                  |         |         ...       |         |         |
-                  +---------+---------+---------+---------+---------+
-                                       |
-                                       v
-                          +-------------------------------+
-                          |         CAN Interface         |
-                          | (Reads power module data)     |
-                          +-------------------------------+
-                                       |
-                                       v
-                          +-------------------------------+
-                          |      Power Modules (HW)       |
-                          +-------------------------------+
+   +-------------------+      +-------------------+      +-------------------+
+   |   SECC #1         |      |   SECC #2         | ...  |   SECC #N         |
+   | (WebSocket Client)|      | (WebSocket Client)|      | (WebSocket Client)|
+   +--------+----------+      +--------+----------+      +--------+----------+
+            |                        |                        |
+            |                        |                        |
+   ws://pep-server/chargepoint1  ws://pep-server/chargepoint2  ws://pep-server/chargepointN
+            |                        |                        |
+            v                        v                        v
+   +-------------------+      +-------------------+      +-------------------+
+   |  PECC Server      |      |  PECC Server      |      |  PECC Server      |
+   | (WebSocket URL)   |      | (WebSocket URL)   |      | (WebSocket URL)   |
+   +--------+----------+      +--------+----------+      +--------+----------+
+            |                        |                        |
+            v                        v                        v
+   +-------------------+      +-------------------+      +-------------------+
+   | Gun/Outlet #1     |      | Gun/Outlet #2     | ...  | Gun/Outlet #N     |
+   | Session/StateMach.|      | Session/StateMach.|      | Session/StateMach.|
+   +--------+----------+      +--------+----------+      +--------+----------+
+            |                        |                        |
+            v                        v                        v
+   +---------------------------------------------------------+
+   |                Power Electronics (HW)                   |
+   |                (CAN Interface)                          |
+   +---------------------------------------------------------+
 
-Other cross-cutting modules (not shown for clarity):
-- Power Limit Manager
+System-wide cross-cutting modules:
 - Error Handling & Recovery
+- Power Limit Manager
 - Configuration & Utilities
 ```
 
@@ -291,15 +277,70 @@ Other cross-cutting modules (not shown for clarity):
    - Write unit and integration tests for all modules.
    - Validate protocol compliance and error handling.
 
-10. **Documentation & Extensibility**
-    - Document all modules and flows.
-    - Plan for future hardware/protocol updates.
+
+---
+
+## Step-by-Step Milestone Development Plan
+
+**Milestone 1: Project Initialization & Environment Setup**
+  - Finalize requirements and architecture.
+  - Set up version control (Git) and repository structure.
+  - Create Python environment and install dependencies.
+  - Add initial documentation and .gitignore.
+
+**Milestone 2: WebSocket Server & SECC Connection Handling**
+  - Implement basic PECC WebSocket server accepting SECC connections.
+  - Handle multiple SECCs (connection management).
+  - Add logging and connection diagnostics.
+  - Unit test connection logic.
+
+**Milestone 3: Gun/Vehicle Session State Machine**
+  - Design and implement session management for each gun/outlet.
+  - Map SECC requests to correct session.
+  - Implement state transitions (idle, charging, error, etc.).
+  - Test session logic with simulated requests.
+
+**Milestone 4: PEP-WS Protocol Message Handling**
+  - Implement message parsing, validation, and response logic for all protocol messages.
+  - Track sequence numbers and ensure compliance.
+  - Add error handling for invalid messages.
+  - Test protocol compliance with sample frames.
+
+**Milestone 5: CAN Bus Integration**
+  - Implement CAN interface for power module data.
+  - Map CAN data to gun sessions.
+  - Handle CAN errors and retries.
+  - Test CAN integration with mock or real hardware.
+
+**Milestone 6: Power Limit Management**
+  - Implement logic to enforce and update power/current/voltage limits per gun/session.
+  - Provide configuration interface for limits.
+  - Test limit enforcement and configuration updates.
+
+**Milestone 7: Error Handling & Recovery**
+  - Implement error detection, reporting, and recovery logic.
+  - Add system-wide logging and monitoring.
+  - Test error scenarios and recovery flows.
+
+**Milestone 8: Periodic Tasks & Status Reporting**
+  - Implement periodic status/info reporting to SECCs.
+  - Monitor and enforce power limits in background tasks.
+  - Test periodic reporting and monitoring.
+
+**Milestone 9: Integration Testing & Validation**
+  - Write integration tests for all modules.
+  - Validate protocol compliance and error handling end-to-end.
+  - Test with multiple SECCs and guns.
+
+**Milestone 10: Documentation, Deployment & Extensibility**
+  - Document all modules, flows, and configuration.
+  - Prepare deployment scripts and instructions.
+  - Plan for future hardware/protocol updates and extensibility.
 
 ---
 
 ## Summary
 This architecture provides a robust, scalable, and protocol-compliant foundation for a PECC device managing multiple SECCs and multiple guns/vehicles per SECC, with real-time CAN integration, error handling, and flexible configuration.
-
 
 ## Error Handling
 - All errors (protocol, hardware, CAN, etc.) are caught and reported
