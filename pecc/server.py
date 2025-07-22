@@ -19,7 +19,11 @@ class PECCServer:
 
     async def handler(self, connection):
         # websockets passes a ServerConnection object
-        path = getattr(connection, "path", None)
+        # path = getattr(connection, "path", None)
+        path = getattr(connection, "request", None)
+        if path is not None:
+            path = getattr(connection.request, "path", None)
+
         log_info(f"SECC connected: {path}")
         handler = SECCConnectionHandler(connection, path)
         self.active_connections[path] = handler
