@@ -204,6 +204,53 @@ Start
 [End]
 ```
 
+```plaintext
++-------------------+         +-------------------+         +-------------------+
+|                   |         |                   |         |                   |
+|   SECC #1         |  ...    |   SECC #N         |         |   SECC #6         |
+| (WebSocket Client)|         | (WebSocket Client)|         | (WebSocket Client)|
++--------+----------+         +--------+----------+         +--------+----------+
+         |                             |                             |
+         |                             |                             |
+         +-----------------------------+-----------------------------+
+                                       |
+                                       v
+                          +-------------------------------+
+                          |        PECC WebSocket         |
+                          |         Server Layer          |
+                          +-------------------------------+
+                                       |
+                                       v
+                +---------------------------------------------------+
+                |                 SECC Connection Handler           |
+                |  (One per SECC, manages all guns/sessions)        |
+                +---------------------------------------------------+
+                  |         |         |         |         |         |
+                  v         v         v         v         v         v
+           +---------+ +---------+ ... +---------+ ... +---------+ +---------+
+           | Gun #1  | | Gun #2  |     | Gun #n  |     | Gun #12 | | Gun #n  |
+           | Session | | Session |     | Session |     | Session | | Session |
+           +---------+ +---------+     +---------+     +---------+ +---------+
+                  |         |         ...       |         |         |
+                  +---------+---------+---------+---------+---------+
+                                       |
+                                       v
+                          +-------------------------------+
+                          |         CAN Interface         |
+                          | (Reads power module data)     |
+                          +-------------------------------+
+                                       |
+                                       v
+                          +-------------------------------+
+                          |      Power Modules (HW)       |
+                          +-------------------------------+
+
+Other cross-cutting modules (not shown for clarity):
+- Power Limit Manager
+- Error Handling & Recovery
+- Configuration & Utilities
+```
+
 ---
 
 ## Development Plan
