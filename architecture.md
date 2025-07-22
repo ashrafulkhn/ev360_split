@@ -13,7 +13,6 @@ This architecture enables a Power Electronics Communication Controller (PECC) to
 
 ### 1. WebSocket Server Layer
 - Accepts and manages multiple SECC connections (async, scalable)
-- Each SECC connection is handled in its own async task
 
 ### 2. SECC Connection Handler
 - For each SECC, manages all communication and sessions for its guns/vehicles
@@ -111,13 +110,149 @@ pecc/
 
 ---
 
-## Error Handling
-- All errors (protocol, hardware, CAN, etc.) are caught and reported
-- Sessions are reset to standby on critical errors
-- Error messages include errorCategory and errorDetails
-- System logs all errors for diagnostics
+## Comprehensive Flow Chart: Multi-SECC, Multi-Gun Charging System
+
+```plaintext
+Start
+  |
+  v
+[PECC WebSocket Server Starts]
+  |
+  v
+[Wait for SECC Connections]
+  |
+  v
+[SECC Connects] <--- Multiple SECCs (up to 6)
+  |
+  v
+[Create SECC Connection Handler]
+  |
+  v
+[For Each Gun/Vehicle (up to 12 per SECC)]
+  |
+  v
+[Create Gun Session State Machine]
+  |
+  v
+[Main Loop: Handle Requests]
+  |
+  +--> [Receive Message from SECC]
+  |      |
+  |      v
+  |  [Parse & Validate Message]
+  |      |
+  |      v
+  |  [Dispatch to Gun Session]
+  |      |
+  |      v
+  |  [Process Message]
+  |      |
+  |      +--> [If configuration/cableCheck]
+  |      |      |
+  |      |      v
+  |      |  [Respond with config/cableCheck result]
+  |      |
+  |      +--> [If contactorsStatus]
+  |      |      |
+  |      |      v
+  |      |  [Open/Close Contactors]
+  |      |
+  |      +--> [If targetValues]
+  |      |      |
+  |      |      v
+  |      |  [Update Charging State]
+  |      |      |
+  |      |      v
+  |      |  [Trigger CAN Read]
+  |      |      |
+  |      |      v
+  |      |  [Send Info/Status to SECC]
+  |      |
+  |      +--> [If getInput/setOutput]
+  |      |      |
+  |      |      v
+  |      |  [Read/Set Hardware I/O]
+  |      |
+  |      +--> [If stopCharging/reset]
+  |      |      |
+  |      |      v
+  |      |  [Reset Session State]
+  |      |
+  |      +--> [If Error]
+  |             |
+  |             v
+  |         [Send Error Message]
+  |             |
+  |             v
+  |         [Reset Session to Standby]
+  |
+  v
+[Periodic Tasks]
+  |
+  +--> [Read CAN Data]
+  |      |
+  |      v
+  |  [Update Gun Sessions]
+  |
+  +--> [Send Status/Info to SECC]
+  |
+  +--> [Monitor Power Limits]
+  |
+  +--> [Log & Monitor Errors]
+  |
+  v
+[End]
+```
+
+---
+
+## Development Plan
+
+1. **Project Setup**
+   - Create the directory structure as described above.
+   - Set up a Python environment and install required packages (e.g., websockets, can).
+
+2. **WebSocket Server Implementation**
+   - Implement the server to accept multiple SECC connections asynchronously.
+   - For each connection, spawn a handler.
+
+3. **Session Management**
+   - Design and implement the gun/vehicle session state machine.
+   - Map SECC requests to the correct session.
+
+4. **PEP-WS Protocol Handling**
+   - Implement message parsing, validation, and response logic for all protocol messages.
+   - Track sequence numbers and ensure compliance.
+
+5. **CAN Integration**
+   - Implement CAN interface to read power module data.
+   - Map CAN data to gun sessions and handle errors.
+
+6. **Power Limit Management**
+   - Implement logic to enforce and update power limits per gun/session.
+   - Provide configuration interface for limits.
+
+7. **Error Handling & Logging**
+   - Implement error detection, reporting, and recovery.
+   - Add logging and monitoring for diagnostics.
+
+8. **Periodic Tasks**
+   - Implement periodic status/info reporting to SECC.
+   - Monitor and enforce power limits.
+
+9. **Testing & Validation**
+   - Write unit and integration tests for all modules.
+   - Validate protocol compliance and error handling.
+
+10. **Documentation & Extensibility**
+    - Document all modules and flows.
+    - Plan for future hardware/protocol updates.
 
 ---
 
 ## Summary
 This architecture provides a robust, scalable, and protocol-compliant foundation for a PECC device managing multiple SECCs and multiple guns/vehicles per SECC, with real-time CAN integration, error handling, and flexible configuration.
+
+
+## Error Handling
+- All errors (protocol, hardware, CAN, etc.) are caught and reported
