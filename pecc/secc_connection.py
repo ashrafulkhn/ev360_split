@@ -19,36 +19,81 @@ class SECCConnectionHandler:
     async def run(self):
         log_info(f"Handler started for SECC: {self.path}")
         try:
+            from pecc.messages import PEPWSMessageProcessor
             async for message in self.websocket:
                 log_info(f"Received message from SECC {self.path}: {message}")
-                # Example: parse message and update session state/data
-                # You can expand this logic for real protocol parsing
-                # For demonstration, let's assume message is a JSON string
-                import json
-                try:
-                    msg = json.loads(message)
-                    kind = msg.get("kind")
-                    payload = msg.get("payload", {})
-                    if kind == "evConnectionState":
-                        status = payload.get("evConnectionState")
-                        await self.session.set_status(status)
-                        if status == "error":
-                            await self.session.transition_state(GunState.ERROR)
-                        elif status == "charging":
-                            await self.session.transition_state(GunState.CHARGING)
-                        elif status == "idle":
-                            await self.session.transition_state(GunState.IDLE)
-                    elif kind == "configuration":
-                        # Example: update current/voltage demand if present
-                        current = payload.get("current_demand")
-                        voltage = payload.get("voltage_demand")
-                        if current is not None:
-                            await self.session.set_current_demand(current)
-                        if voltage is not None:
-                            await self.session.set_voltage_demand(voltage)
-                    # Add more message kinds and session updates as needed
-                except Exception as e:
-                    log_error(f"Failed to parse/update session for SECC {self.path}: {e}")
+                msg, err = PEPWSMessageProcessor.parse_message(message)
+                if err:
+                    log_error(f"Message parse error from SECC {self.path}: {err}")
+                    error_resp = PEPWSMessageProcessor.build_response({}, error=err)
+                    await self.websocket.send(error_resp)
+                    continue
+                valid, err = PEPWSMessageProcessor.validate_message(msg)
+                if not valid:
+                    log_error(f"Message validation error from SECC {self.path}: {err}")
+                    error_resp = PEPWSMessageProcessor.build_response(msg, error=err)
+                    await self.websocket.send(error_resp)
+                    continue
+                kind = msg.get("kind")
+                payload = msg.get("payload", {})
+                seq = msg.get("sequenceNumber")
+                response_payload = {}
+                # --- Full protocol logic ---
+                if kind == "evConnectionState":
+                    status = payload.get("evConnectionState")
+                    await self.session.set_status(status)
+                    if status == "error":
+                        await self.session.transition_state(GunState.ERROR)
+                    elif status == "charging":
+                        await self.session.transition_state(GunState.CHARGING)
+                    elif status == "idle":
+                        await self.session.transition_state(GunState.IDLE)
+                    response_payload = {"state": str(await self.session.get_state())}
+                    resp = PEPWSMessageProcessor.build_response(msg, payload=response_payload)
+                    await self.websocket.send(resp)
+                elif kind == "configuration":
+                    current = payload.get("current_demand")
+                    voltage = payload.get("voltage_demand")
+                    if current is not None:
+                        await self.session.set_current_demand(current)
+                    if voltage is not None:
+                        await self.session.set_voltage_demand(voltage)
+                    # Return current config
+                    response_payload = {
+                        "current_demand": await self.session.get_current_demand(),
+                        "voltage_demand": await self.session.get_voltage_demand(),
+                    }
+                    resp = PEPWSMessageProcessor.build_response(msg, payload=response_payload)
+                    await self.websocket.send(resp)
+                elif kind == "targetValues":
+                    # Example: update session with target values
+                    target_current = payload.get("targetCurrent")
+                    target_voltage = payload.get("targetVoltage")
+                    if target_current is not None:
+                        await self.session.set_current_demand(target_current)
+                    if target_voltage is not None:
+                        await self.session.set_voltage_demand(target_voltage)
+                    response_payload = {
+                        "current_demand": await self.session.get_current_demand(),
+                        "voltage_demand": await self.session.get_voltage_demand(),
+                    }
+                    resp = PEPWSMessageProcessor.build_response(msg, payload=response_payload)
+                    await self.websocket.send(resp)
+                elif kind == "stopCharging":
+                    await self.session.transition_state(GunState.STOPPED)
+                    response_payload = {"state": str(await self.session.get_state())}
+                    resp = PEPWSMessageProcessor.build_response(msg, payload=response_payload)
+                    await self.websocket.send(resp)
+                elif kind == "reset":
+                    await self.session.transition_state(GunState.IDLE)
+                    response_payload = {"state": str(await self.session.get_state())}
+                    resp = PEPWSMessageProcessor.build_response(msg, payload=response_payload)
+                    await self.websocket.send(resp)
+                else:
+                    # Unknown kind
+                    log_error(f"Unknown message kind from SECC {self.path}: {kind}")
+                    error_resp = PEPWSMessageProcessor.build_response(msg, error=f"Unknown kind: {kind}")
+                    await self.websocket.send(error_resp)
         except Exception as e:
             log_error(f"SECC handler error: {e}")
         finally:

@@ -1,3 +1,47 @@
+# --- Protocol Message Processor ---
+import json
+
+class PEPWSMessageProcessor:
+    REQUIRED_FIELDS = ["kind", "type"]
+
+    @staticmethod
+    def parse_message(raw):
+        try:
+            msg = json.loads(raw)
+            for field in PEPWSMessageProcessor.REQUIRED_FIELDS:
+                if field not in msg:
+                    return None, f"Missing required field: {field}"
+            return msg, None
+        except Exception as e:
+            return None, f"Invalid JSON: {e}"
+
+    @staticmethod
+    def validate_message(msg):
+        # Add protocol-specific validation here
+        # Example: check sequenceNumber for requests/responses
+        if "sequenceNumber" in msg and not isinstance(msg["sequenceNumber"], int):
+            return False, "sequenceNumber must be integer"
+        return True, None
+
+    @staticmethod
+    def build_response(request_msg, payload=None, error=None):
+        resp = {
+            "kind": request_msg.get("kind"),
+            "type": "response" if not error else "error",
+            "sequenceNumber": request_msg.get("sequenceNumber"),
+            "payload": payload if payload is not None else {},
+        }
+        if error:
+            resp["errorDetails"] = error
+        return json.dumps(resp)
+
+    @staticmethod
+    def build_info(kind, payload=None):
+        return json.dumps({
+            "kind": kind,
+            "type": "info",
+            "payload": payload if payload is not None else {},
+        })
 # Message builders and parsers for PEP-WS protocol
 
 def build_configuration_request(seq):

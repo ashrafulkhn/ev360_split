@@ -16,7 +16,7 @@ class PECCServer:
         self.host = host if host is not None else config.get("server_host")
         self.port = port if port is not None else config.get("server_port")
         self.active_connections = {}
-
+ 
     async def handler(self, connection):
         # websockets passes a ServerConnection object
         # path = getattr(connection, "path", None)
