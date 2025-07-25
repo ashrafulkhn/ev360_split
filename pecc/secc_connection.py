@@ -4,10 +4,21 @@ Manages communication and sessions for each SECC connection.
 Modular and scalable for multiple SECCs.
 """
 
+import asyncio
 from pecc.utils import log_info, log_error
 from pecc.gun_session import GunSession, GunState
 
 class SECCConnectionHandler:
+    def start_info_sender(self):
+        from pecc.info_sender import InfoMessageSender
+        self.info_sender = InfoMessageSender(self.websocket, self.session, self.gun_id)
+        self.info_task = asyncio.create_task(self.info_sender.send_status(0.2))
+
+    def stop_info_sender(self):
+        if hasattr(self, 'info_sender'):
+            self.info_sender.stop()
+        if hasattr(self, 'info_task'):
+            self.info_task.cancel()
     def __init__(self, websocket, path):
         self.websocket = websocket
         self.path = path
@@ -18,6 +29,7 @@ class SECCConnectionHandler:
 
     async def run(self):
         log_info(f"Handler started for SECC: {self.path}")
+        self.start_info_sender()
         try:
             from pecc.messages import PEPWSMessageProcessor
             async for message in self.websocket:
@@ -61,21 +73,9 @@ class SECCConnectionHandler:
                         await self.session.set_current_demand(current)
                     if voltage is not None:
                         await self.session.set_voltage_demand(voltage)
-                    # Return current config
-                    # response_payload = {
-                    #     "current_demand": await self.session.get_current_demand(),
-                    #     "voltage_demand": await self.session.get_voltage_demand(),
-                    # }
-                    response_payload = {
-                        "maxCurrent": 125,           # Example: 125A
-                        "maxVoltage": 1000,          # Example: 1000V
-                        "minCurrent": 6,             # Example: 6A
-                        "minVoltage": 200,           # Example: 200V
-                        "supportedModes": ["CC", "CV"],
-                        "gunId": self.gun_id,
-                        "protocolVersion": "1.0"
-                        # Add any other required fields
-                    }
+                    from config.gun_configs import gun_configs
+                    config = gun_configs.get(self.gun_id, gun_configs.get("GUN1"))
+                    response_payload = config
                     resp = PEPWSMessageProcessor.build_response(msg, payload=response_payload)
                     log_info(f"Sending response to SECC {self.path}: {resp}")
                     await self.websocket.send(resp)
@@ -105,6 +105,10 @@ class SECCConnectionHandler:
                     resp = PEPWSMessageProcessor.build_response(msg, payload=response_payload)
                     log_info(f"Sending response to SECC {self.path}: {resp}")
                     await self.websocket.send(resp)
+                elif kind == "info":
+                    # Handle info messages from SECC
+                    log_info(f"Received info message from SECC {self.path}: {payload}")
+                    # Optionally update session or take action based on info
                 else:
                     log_error(f"Unknown message kind from SECC {self.path}: {kind}")
                     error_resp = PEPWSMessageProcessor.build_response(msg, error=f"Unknown kind: {kind}")
@@ -114,6 +118,7 @@ class SECCConnectionHandler:
             log_error(f"SECC handler error: {e}")
         finally:
             self.active = False
+            self.stop_info_sender()
             log_info(f"Handler stopped for SECC: {self.path}")
 
     async def handle_message(self, message):
