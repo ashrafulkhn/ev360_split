@@ -12,7 +12,7 @@ class SECCConnectionHandler:
     def start_info_sender(self):
         from pecc.info_sender import InfoMessageSender
         self.info_sender = InfoMessageSender(self.websocket, self.session, self.gun_id)
-        self.info_task = asyncio.create_task(self.info_sender.send_status(0.2))
+        self.info_task = asyncio.create_task(self.info_sender.send_status(0.5))     # Time interval for sending info message.
 
     def stop_info_sender(self):
         if hasattr(self, 'info_sender'):
@@ -48,11 +48,22 @@ class SECCConnectionHandler:
                     log_info(f"Sending error response to SECC {self.path}: {error_resp}")
                     await self.websocket.send(error_resp)
                     continue
+                msg_type = msg.get("type")
                 kind = msg.get("kind")
                 payload = msg.get("payload", {})
                 seq = msg.get("sequenceNumber")
                 response_payload = {}
-                # --- Full protocol logic ---
+                # Only reply to 'request' messages
+                if msg_type == "info":
+                    log_info(f"Received info message from SECC {self.path}: {payload}")
+                    continue  # Do not reply
+                if msg_type == "error":
+                    log_info(f"Received error message from SECC {self.path}: {payload}")
+                    continue  # Do not reply
+                if msg_type != "request":
+                    log_info(f"Ignoring message of type {msg_type} from SECC {self.path}")
+                    continue
+                # --- Full protocol logic for requests ---
                 if kind == "evConnectionState":
                     status = payload.get("evConnectionState")
                     await self.session.set_status(status)
@@ -105,15 +116,9 @@ class SECCConnectionHandler:
                     resp = PEPWSMessageProcessor.build_response(msg, payload=response_payload)
                     log_info(f"Sending response to SECC {self.path}: {resp}")
                     await self.websocket.send(resp)
-                elif kind == "info":
-                    # Handle info messages from SECC
-                    log_info(f"Received info message from SECC {self.path}: {payload}")
-                    # Optionally update session or take action based on info
                 else:
                     log_error(f"Unknown message kind from SECC {self.path}: {kind}")
-                    error_resp = PEPWSMessageProcessor.build_response(msg, error=f"Unknown kind: {kind}")
-                    log_info(f"Sending error response to SECC {self.path}: {error_resp}")
-                    await self.websocket.send(error_resp)
+                    # Optionally send error response for unknown kind if required by protocol
         except Exception as e:
             log_error(f"SECC handler error: {e}")
         finally:

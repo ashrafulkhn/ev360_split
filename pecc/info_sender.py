@@ -13,7 +13,7 @@ class InfoMessageSender:
         self.active = True
         self.logger = logger
 
-    async def send_status(self, interval=0.2):
+    async def send_status(self, interval=.2):
         while self.active:
             try:
                 payload = {
@@ -22,6 +22,8 @@ class InfoMessageSender:
                     "drivenVoltage": await self.session.get_voltage_demand() or 0,
                     "drivenCurrent": await self.session.get_current_demand() or 0,
                     "temperature": 35.0,
+                    "contactorsStatus": "open",
+                    "isolationStatus": "invalid",
                     "operationalStatus": "operative"
                 }
                 msg = PEPWSMessageProcessor.build_info("status", payload)
