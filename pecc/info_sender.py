@@ -21,7 +21,6 @@ class InfoMessageSender:
                     "measuredCurrent": await self.session.get_current_demand() or 0,
                     "drivenVoltage": await self.session.get_voltage_demand() or 0,
                     "drivenCurrent": await self.session.get_current_demand() or 0,
-
                     "temperature": 35.0,
                     "operationalStatus": "operative"
                 }
