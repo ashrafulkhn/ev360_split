@@ -23,9 +23,10 @@ class InfoMessageSender:
                     "drivenCurrent": await self.session.get_current_demand() or 0,
                     "temperature": 35.0,
                     "contactorsStatus": "open",
-                    "isolationStatus": "invalid",
+                    "isolationStatus": "valid",
                     "operationalStatus": "operative"
                 }
+                 
                 msg = PEPWSMessageProcessor.build_info("status", payload)
                 if self.logger:
                     self.logger.info(f"Sending periodic info to SECC /{self.gun_id}: {msg}")
