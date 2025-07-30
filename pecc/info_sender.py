@@ -13,7 +13,7 @@ class InfoMessageSender:
         self.active = True
         self.logger = logger
 
-    async def send_status(self, interval=.2):
+    async def send_status(self, interval):
         while self.active:
             try:
                 payload = {
