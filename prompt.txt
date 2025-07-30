@@ -1,36 +1,36 @@
 type: request
-kind :
-configuration
-cableCheck
-targetValues
-contactorsStatus
-reset
-getInput
-setInput
-stopCharging
-
-
+    kind :
+        configuration
+        cableCheck
+        targetValues
+        contactorsStatus
+        reset
+        getInput
+        setInput
+        stopCharging
 
 type: response
-kind:
-configuration
-cableCheck
-targetValues
-contactorsStatus
-reset
-getInput
-setInput
-stopCharging
+    kind:
+        configuration
+        cableCheck
+        targetValues
+        contactorsStatus
+        reset
+        getInput
+        setInput
+        stopCharging
 
 type: error
-kind: cableCheck or any other
+    kind: 
+        cableCheck or any other
 
 type: info
-kind: 
-event
-status
-evConnectionState
-ChargingSession
-
+    kind: 
+        event
+        status
+        evConnectionState
+        ChargingSession
 
 These are the total type and kind of the SECC and PECC. Need to implement all of them.
+
+ws://192.168.3.11:8765/gun/25
