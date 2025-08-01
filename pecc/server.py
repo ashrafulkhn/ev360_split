@@ -17,12 +17,18 @@ class PECCServer:
         self.port = port if port is not None else config.get("server_port")
         self.active_connections = {}
  
-    async def handler(self, connection):
+    async def handler(self, connection, path):
         # websockets passes a ServerConnection object
         # path = getattr(connection, "path", None)
-        path = getattr(connection, "request", None)
-        if path is not None:
-            path = getattr(connection.request, "path", None)
+        '''
+        Uncomment this lines if you are using Websockets version > 11 to get the path. 
+        Also remove the path as parameter from the handler method as it will be dirctly
+        fetched from the connection.request method.
+        '''
+    
+        # path = getattr(connection, "request", None)
+        # if path is not None:
+        #     path = getattr(connection.request, "path", None)
 
         log_info(f"SECC connected: {path}")
         handler = SECCConnectionHandler(connection, path)
@@ -30,7 +36,7 @@ class PECCServer:
         try:
             await handler.run()
         except Exception as e:
-            log_error(f"Connection error: {e}")
+            log_error(f"Connection error: {e}") 
         finally:
             del self.active_connections[path]
             log_info(f"SECC disconnected: {path}")
