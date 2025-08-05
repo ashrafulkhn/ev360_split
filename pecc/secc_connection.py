@@ -12,7 +12,7 @@ class SECCConnectionHandler:
     def start_info_sender(self):
         from pecc.info_sender import InfoMessageSender
         self.info_sender = InfoMessageSender(self.websocket, self.session, self.gun_id)
-        self.info_task = asyncio.create_task(self.info_sender.send_status(3))     # Time interval for sending info message.
+        self.info_task = asyncio.create_task(self.info_sender.send_status(.25))     # Time interval for sending info message.
 
     def stop_info_sender(self):
         if hasattr(self, 'info_sender'):
