@@ -1,4 +1,5 @@
 from gpio_config import GPIO_PIN
+import os
 
 class GPIOController:
     def __init__(self, gpio_map):
