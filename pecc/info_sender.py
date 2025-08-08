@@ -23,7 +23,7 @@ class InfoMessageSender:
                     "drivenCurrent": await self.session.get_current_demand() or 0,
                     "temperature": 35.0,
                     "contactorsStatus": "open",
-                    "isolationStatus": "valid",
+                    "isolationStatus": "invalid",
                     "operationalStatus": "operative"
                 }
                  

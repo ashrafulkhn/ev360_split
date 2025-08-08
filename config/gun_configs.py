@@ -183,3 +183,20 @@ gun_configs = {
         "floatValues": True
     },
 }
+
+
+# class communication_model:
+#     {"info": {
+#         "request": {
+#             "configuration" : gun_configs.get("GUN12"),
+#             "cablecheck"    : {},
+#             "targetVAlue"    : {
+#                 "targetVoltage" : DATA_MODEL.getVolatge("GUN1"),
+#             },
+#         }
+#     },
+#         "response": {
+#             "configuration" : gun_configs.get("GUN12"),
+#             "cablecheck"    : {},
+#         }
+#     }
