@@ -9,6 +9,7 @@ import websockets
 from pecc.utils import log_info, log_error
 from pecc.secc_connection import SECCConnectionHandler
 from pecc.config_parser import PECCConfigParser
+from pecc.version_check import Versions
 
 class PECCServer:
     def __init__(self, host=None, port=None):
@@ -17,18 +18,16 @@ class PECCServer:
         self.port = port if port is not None else config.get("server_port")
         self.active_connections = {}
  
-    async def handler(self, connection, path):
+    async def handler(self, *args):   # Use this for Websocket version > 10.1
         # websockets passes a ServerConnection object
-        # path = getattr(connection, "path", None)
-        '''
-        Uncomment this lines if you are using Websockets version > 11 to get the path. 
-        Also remove the path as parameter from the handler method as it will be dirctly
-        fetched from the connection.request method.
-        '''
-    
-        # path = getattr(connection, "request", None)
-        # if path is not None:
-        #     path = getattr(connection.request, "path", None)
+        # Find the path and the connection of the Clients
+        if Versions.check_if_websocket_old():
+            connection, path = args
+        else:
+            connection = args[0]
+            path = getattr(connection, "request", None)
+            if path is not None:
+                path = getattr(connection.request, "path", None)
 
         log_info(f"SECC connected: {path}")
         handler = SECCConnectionHandler(connection, path)
