@@ -6,10 +6,9 @@ Modular, scalable, and maintainable.
 
 import asyncio
 import websockets
-from pecc.utils import log_info, log_error
+from pecc.utils import log_info, log_error, Versions
 from pecc.secc_connection import SECCConnectionHandler
 from pecc.config_parser import PECCConfigParser
-from pecc.version_check import Versions
 
 class PECCServer:
     def __init__(self, host=None, port=None):
