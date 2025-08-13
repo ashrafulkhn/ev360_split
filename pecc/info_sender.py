@@ -26,7 +26,7 @@ class InfoMessageSender:
                     "isolationStatus": "invalid",
                     "operationalStatus": "operative"
                 }
-                 
+ 
                 msg = PEPWSMessageProcessor.build_info("status", payload)
                 if self.logger:
                     self.logger.info(f"Sending periodic info to SECC /{self.gun_id}: {msg}")

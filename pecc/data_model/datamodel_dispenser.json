@@ -7,21 +7,21 @@
                 },
                 "cableCheck":{
                     "payload":{
-                        "voltage": 400
+                        "voltage": 0
                     }
                 },
                 "targetValues":{
                     "payload":{
                         "batteryStateOfCharge":10.0,
-                        "chargingState":"preCharge", //standby,preCharge,postCharge, charge
-                        "targetCurrent":1.8,
-                        "targetVoltage":392.2
+                        "chargingState":"preCharge",
+                        "targetCurrent":0.0,
+                        "targetVoltage":0.0
 
                     }
                 },
                 "contactorsStatus":{
                     "payload":{
-                        "contactorStatus":"closed" //open or closed
+                        "contactorStatus":"closed"
                     }
                 },
                 "reset":{
@@ -58,26 +58,26 @@
                         "limitDischargeCurrentMax":-30,
                         "limitDischargePowerMin":0,
                         "limitDischargePowerMax":-15000,
-                        "floatValues":true  //false
+                        "floatValues":true
                     }
                 },
                 "cableCheck":{
                     "payload":{
-                    //     "cableCheckResult":"valid", //invalid
-                    //     "voltage":450.0
+                        "cableCheckResult":"valid",
+                        "voltage":450.0
                  }
                 },
                 "targetValues":{
                     "payload":{
-                        // "current_demand":1.8,
-                        // "voltage_demand":398.2,
-                        // "batteryStateOfCharge":10.0,
-                        // "chargingState":"preCharge" //post charge
+                        "current_demand":0,
+                        "voltage_demand":0,
+                        "batteryStateOfCharge":0.0,
+                        "chargingState":"preCharge"
                     }
                 },
                 "contactorsStatus":{
                     "payload":{
-                        // "contactorStatus":"closed"
+                        
                     }
                 },"reset":{
                     "payload":{}
@@ -104,7 +104,7 @@
             "kind":{
                 "evConnectionState":{
                     "payload":{
-                        "evConnectionState":"error",//connected or disconnected or error or energyTranferAllowed
+                        "evConnectionState":"error",
                         "vehicleId":"string" 
                     }
                 },
@@ -115,7 +115,7 @@
                         "evMinCurrentAmperes":0.0,
                         "evMaxCurrentAmperes":217.8,
                          "evMinPowerwatts":0.0,
-                         "evMaxPowerwatts":12500,
+                         "evMaxPowerwatts":120000,
                          "evMinDisChargeCurrentAmperes":0,
                          "evMaxDisChargeCurrentAmperes":-100,
                          "evMinDisChargePowerWatts":0,
@@ -125,7 +125,7 @@
                 },
                 "event":{
                     "payload":{
-                        "eventDetails":"vendor specific description of an event"
+                        "eventDetails":"Everything is fine."
                     }
                 },
                 "status":{
@@ -136,15 +136,15 @@
                         "drivenCurrent":0,
                         "temparature":0,
                         "contactorStatus":"contactorsStatusType",
-                        "isolationStatus":"isolationStatusType", //valid or invalid or warning or fault
-                        "operationalStatus":"operationalStatusType" //operative or inoperative
+                        "isolationStatus":"isolationStatusType",
+                        "operationalStatus":"operationalStatusType"
                     }
                 }
             }
         },
         "error":{
             "payload":{
-                "errorCategory": "format", //format,value,inoperative,internal,generic
+                "errorCategory": "format",
                 "errorDetails":"JSON schema validation failed at line 5"
             }
         }
