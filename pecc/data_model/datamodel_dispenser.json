@@ -135,9 +135,9 @@
                         "drivenVoltage":0,
                         "drivenCurrent":0,
                         "temparature":0,
-                        "contactorStatus":"contactorsStatusType",
-                        "isolationStatus":"isolationStatusType",
-                        "operationalStatus":"operationalStatusType"
+                        "contactorStatus":"open",
+                        "isolationStatus":"valid",
+                        "operationalStatus":"operational"
                     }
                 }
             }

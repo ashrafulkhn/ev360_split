@@ -24,9 +24,12 @@ class PECCServer:
             connection, path = args
         else:
             connection = args[0]
-            path = getattr(connection, "request", None)
-            if path is not None:
-                path = getattr(connection.request, "path", None)
+            path = None
+            if hasattr(connection, "request") and hasattr(connection.request, "path"):
+                path = connection.request.path
+        # Ensure path is always a valid string
+        if not path or not isinstance(path, str):
+            path = "/UNKNOWN"
 
         log_info(f"SECC connected: {path}")
         handler = SECCConnectionHandler(connection, path)
@@ -36,7 +39,10 @@ class PECCServer:
         except Exception as e:
             log_error(f"Connection error: {e}") 
         finally:
-            del self.active_connections[path]
+            if path in self.active_connections:
+                del self.active_connections[path]
+            else:
+                log_error(f"Tried to remove connection for unknown path: {path}")
             log_info(f"SECC disconnected: {path}")
 
     def start(self):

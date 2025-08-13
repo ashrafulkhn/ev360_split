@@ -6,27 +6,45 @@ import asyncio
 from pecc.messages import PEPWSMessageProcessor
 
 class InfoMessageSender:
-    def __init__(self, websocket, session, gun_id, logger=None):
+    def __init__(self, websocket, data_model, gun_id, logger=None):
         self.websocket = websocket
-        self.session = session
+        self.data_model = data_model
         self.gun_id = gun_id
         self.active = True
         self.logger = logger
 
+    def fetch_status_payload(self):
+        # Fetch status fields from the data model, use defaults if missing
+        keys = [
+            "measuredVoltage", "measuredCurrent", "drivenVoltage", "drivenCurrent",
+            "temperature", "contactorStatus", "isolationStatus", "operationalStatus"
+        ]
+        payload = {}
+        for k in keys:
+            getter = getattr(self.data_model, f"get_{k}", None)
+            if getter:
+                val = getter()
+            else:
+                val = None
+            # Provide sensible defaults if needed
+            if val is None:
+                if k == "temperature":
+                    val = 35.0
+                elif k == "operationalStatus":
+                    val = "operative"
+                elif k == "isolationStatus":
+                    val = "valid"
+                elif k == "contactorStatus":
+                    val = "closed"
+                else:
+                    val = 0
+            payload[k] = val
+        return payload
+
     async def send_status(self, interval):
         while self.active:
             try:
-                payload = {
-                    "measuredVoltage": await self.session.get_voltage_demand() or 0,
-                    "measuredCurrent": await self.session.get_current_demand() or 0,
-                    "drivenVoltage": await self.session.get_voltage_demand() or 0,
-                    "drivenCurrent": await self.session.get_current_demand() or 0,
-                    "temperature": 35.0,
-                    "contactorsStatus": "open",
-                    "isolationStatus": "invalid",
-                    "operationalStatus": "operative"
-                }
- 
+                payload = self.fetch_status_payload()
                 msg = PEPWSMessageProcessor.build_info("status", payload)
                 if self.logger:
                     self.logger.info(f"Sending periodic info to SECC /{self.gun_id}: {msg}")
