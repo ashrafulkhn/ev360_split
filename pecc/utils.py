@@ -3,7 +3,6 @@ Common utility functions for PECC system.
 Modular and reusable helpers for logging, validation, etc.
 """
 
-
 import logging
 from datetime import datetime
 import websockets
