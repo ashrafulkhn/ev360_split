@@ -23,10 +23,12 @@ class SECCConnectionHandler:
     def __init__(self, websocket, path):
         self.websocket = websocket
         # Ensure path is never None; assign a default if missing
-        self.path = path if path else "/UNKNOWN"
+        # self.path = path if path else "/UNKNOWN"
+        self.path = path
         self.active = True
         # Extract gun id from path, e.g., '/GUN5' -> 'GUN5'
-        self.gun_id = self.path.lstrip('/')
+        self.gun_id = path.lstrip('/') if path else None
+        log_info(f"Connected to Gun path : {self.gun_id}")
         self.session = GunSession(self.gun_id)
         # Create a unique data model for this gun/session
         from os.path import dirname, abspath, join
