@@ -20,13 +20,16 @@ class PECCServer:
     async def handler(self, *args):   # Use this for Websocket version > 10.1
         # websockets passes a ServerConnection object
         # Find the path and the connection of the Clients
-        if Versions.check_if_websocket_old():
+        if len(args) == 2:
+            # Old API: (connection, path)
             connection, path = args
-        else:
+        elif len(args) == 1:
+            # New API: (connection,)
             connection = args[0]
-            path = getattr(connection, "request", None)
-            if path is not None:
-                path = getattr(connection.request, "path", None)
+            path = getattr(connection, "path", None)
+        else:
+            log_error(f"Unexpected handler args: {args}")
+            return
 
         log_info(f"SECC connected: {path}")
         handler = SECCConnectionHandler(connection, path)
