@@ -10,7 +10,7 @@ NUM_CLIENTS = 3
 
 @pytest.mark.asyncio
 async def test_multiple_clients_connect_and_disconnect():
-    server = PECCServer(host='localhost', port=9876)
+    server = PECCServer(host='localhost', port=9876) 
     # Start the server
     server_task = asyncio.create_task(server.start())
     await asyncio.sleep(0.2)  # Give server time to start

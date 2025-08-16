@@ -36,7 +36,7 @@ class PECCServer:
         self.active_connections[path] = handler
         try:
             await handler.run()
-        except Exception as e:
+        except Exception as e:   
             log_error(f"Connection error: {e}") 
         finally:
             del self.active_connections[path]
