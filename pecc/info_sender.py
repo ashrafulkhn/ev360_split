@@ -14,19 +14,10 @@ class InfoMessageSender:
         self.logger = logger
 
     async def send_status(self, interval):
+        from config.info_data import InfoData
         while self.active:
             try:
-                payload = {
-                    "measuredVoltage": await self.session.get_voltage_demand() or 0,
-                    "measuredCurrent": await self.session.get_current_demand() or 0,
-                    "drivenVoltage": await self.session.get_voltage_demand() or 0,
-                    "drivenCurrent": await self.session.get_current_demand() or 0,
-                    "temperature": 35.0,
-                    "contactorsStatus": "open",
-                    "isolationStatus": "invalid",
-                    "operationalStatus": "operative"
-                }
- 
+                payload = InfoData.get_gun_info(self.gun_id)
                 msg = PEPWSMessageProcessor.build_info("status", payload)
                 if self.logger:
                     self.logger.info(f"Sending periodic info to SECC /{self.gun_id}: {msg}")
