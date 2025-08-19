@@ -13,16 +13,16 @@ class GPIOController:
                 f.write(str(gpio_num))
         return gpio_path
 
-    def _export_all(self):
-        for name, gpio_num in self.gpio_map.items():
-            gpio_path = self._export_gpio(gpio_num)
-            self.set_direction(name, "out")
-
     def set_direction(self, name, direction):
         gpio_num = self.gpio_map[name]
         gpio_path = f"/sys/class/gpio/gpio{gpio_num}/direction"
         with open(gpio_path, "w") as f:
             f.write(direction)
+
+    def _export_all(self):
+        for name, gpio_num in self.gpio_map.items():
+            gpio_path = self._export_gpio(gpio_num)
+            self.set_direction(name, "out")
 
     def set_value(self, name, value):
         gpio_num = self.gpio_map[name]
@@ -35,14 +35,15 @@ class GPIOController:
             self.set_value(name, value)
             print(f"{name} set to {value}")
 
-    def interactive_loop(self):
-        while True:
-            state = input("Enter GPIO state (1/0): ").strip()
-            if state not in ["0", "1"]:
-                print("Invalid input. Use 1 or 0.")
-                continue
-            self.set_all(state)
+def interactive_loop(obj):
+    while True:
+        state = input("Enter GPIO state (1/0): ").strip()
+        if state not in ["0", "1"]:
+            print("Invalid input. Use 1 or 0.")
+            continue
+        obj.set_all(state)
+        # obj.set_all(state)
 
 if __name__ == "__main__":
     controller = GPIOController(GPIO_PIN.GPIO_PINS)
-    controller.interactive_loop()
+    interactive_loop(controller)
