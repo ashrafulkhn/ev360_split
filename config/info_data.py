@@ -39,8 +39,8 @@ class InfoData:
     "drivenVoltage":  0,
     "drivenCurrent":  0,
     "temperature": 34.0,
-    "contactorsStatus": "closed",
-    "isolationStatus": "valid",
+    "contactorsStatus": "open",
+    "isolationStatus": "invalid",
     "operationalStatus": "operative"
     }
     gun4_info_data = {"measuredVoltage":  0,

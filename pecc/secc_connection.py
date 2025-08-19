@@ -76,12 +76,12 @@ class SECCConnectionHandler:
                     if voltage is not None:
                         await self.session.set_voltage_demand(voltage)
                     from config.gun_configs import gun_configs
-                    config = gun_configs.get(self.gun_id, gun_configs.get("GUN1"))
+                    config = gun_configs.get(self.gun_id, gun_configs.get(self.gun_id))
                     response_payload = config
                 elif kind == "cableCheck":
                     voltage = payload.get("voltage")
                     # Implement cable check logic here
-                    response_payload = {"cableCheckResult": "valid", "voltage": voltage}
+                    response_payload = {"cableCheckResult": "valid", "voltage": self.session.get_voltage_demand()}
                 elif kind == "targetValues":
                     target_current = payload.get("targetCurrent")
                     target_voltage = payload.get("targetVoltage")
