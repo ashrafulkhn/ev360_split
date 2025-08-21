@@ -34,7 +34,7 @@ class PECCServer:
         log_info(f"SECC connected: {path}")
         handler = SECCConnectionHandler(connection, path)
         self.active_connections[path] = handler
-        log_info(f"Active Connections are: {self.active_connections}")
+        # log_info(f"Active Connections are: {self.active_connections}")
         try:
             await handler.run()
         except Exception as e:   
