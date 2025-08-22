@@ -2,6 +2,7 @@
 FULL_POWER = 60  # This represents combined power configuration from all the modules in Kilo Watts(kW)
 
 class CanId:
+    # CAN IDs for Sending Message to Power Modules.
     CAN_ID_1 = 0x02204000
     CAN_ID_2 = 0x02208000
     CAN_ID_3 = 0x0220C000
@@ -14,6 +15,7 @@ class CanId:
     CAN_ID_10 = 0x02228000
     CAN_ID_11 = 0x0222C000
     CAN_ID_12 = 0x02230000
+    # CAN IDs for recievving Message from Power Modules are Extracted from the Serial Number of the Modules
 
     DIGITAL_OUT1 = 0xD00
     DIGITAL_OUT2 = 0xE00
