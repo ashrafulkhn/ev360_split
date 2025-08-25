@@ -16,6 +16,25 @@ class PECCServer:
         self.host = host if host is not None else config.get("server_host")
         self.port = port if port is not None else config.get("server_port")
         self.active_connections = {}
+        # GPIO integration
+        from contactor_handler.contactor_handlers import GPIOController
+        from contactor_handler.gpio_config import GPIO_PIN
+        self.gpio_controller = GPIOController(GPIO_PIN.GPIO_PINS)
+        # Track evConnectionState per gun
+        self.gun_connection_state = {}
+        # GPIO integration
+        from contactor_handler.contactor_handlers import GPIOController
+        from contactor_handler.gpio_config import GPIO_PIN
+        self.gpio_controller = GPIOController(GPIO_PIN.GPIO_PINS)
+        # For future: 32-bit contactor status
+        self.contactor_status_bits = 0  # Each bit represents a contactor
+
+    def update_contactor(self):
+        # ON if any gun is 'connected', OFF if all are 'disconnected'
+        if any(state == "connected" for state in self.gun_connection_state.values()):
+            self.gpio_controller.set_value("GPIO2_IO01", 0)
+        else:
+            self.gpio_controller.set_value("GPIO2_IO01", 1)
  
     async def handler(self, *args):   # Use this for Websocket version > 10.1
         # websockets passes a ServerConnection object
@@ -32,9 +51,8 @@ class PECCServer:
             return
 
         log_info(f"SECC connected: {path}")
-        handler = SECCConnectionHandler(connection, path)
+        handler = SECCConnectionHandler(connection, path, server=self)
         self.active_connections[path] = handler
-        # log_info(f"Active Connections are: {self.active_connections}")
         try:
             await handler.run()
         except Exception as e:   

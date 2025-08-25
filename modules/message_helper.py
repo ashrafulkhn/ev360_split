@@ -7,7 +7,7 @@ class ModuleMessage:
     bus = CanInterface.bus_instance
 
     @classmethod
-    def set_high_lowMode(cls,can_id, voltage):
+    def set_high_low_Mode(cls,can_id, voltage):
         # Mode should be Low of High (2 - Low, 1 - High)
         mode = 2 if (voltage <= 500) else 1
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[
@@ -51,7 +51,4 @@ class ModuleMessage:
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[16, 3, 0, 0, 0] + currentvalue_hex)
 
         cls.bus.send(message)
-
- 
-
-    
+        

@@ -19,13 +19,14 @@ class SECCConnectionHandler:
             self.info_sender.stop()
         if hasattr(self, 'info_task'):
             self.info_task.cancel()
-    def __init__(self, websocket, path):
+    def __init__(self, websocket, path, server=None):
         self.websocket = websocket
         self.path = path
         self.active = True
         # Extract gun id from path, e.g., '/GUN5' -> 'GUN5'
         self.gun_id = path.lstrip('/') if path else None
         self.session = GunSession(self.gun_id)
+        self.server = server  # Reference to main server for contactor logic
 
     async def run(self):
         log_info(f"Handler started for SECC: {self.path}")
@@ -58,6 +59,12 @@ class SECCConnectionHandler:
                     # Log info kinds
                     if kind in ["event", "status", "evConnectionState", "chargingSession"]:
                         log_info(f"Received info message from SECC {self.path}: kind={kind}, payload={payload}")
+                        # Track evConnectionState and update contactor
+                        if kind == "evConnectionState" and self.server:
+                            state = payload.get("evConnectionState")
+                            if self.gun_id and state:
+                                self.server.gun_connection_state[self.gun_id] = state
+                                self.server.update_contactor()
                     else:
                         log_info(f"Received unknown info kind from SECC {self.path}: kind={kind}, payload={payload}")
                     continue  # Do not reply
@@ -81,7 +88,8 @@ class SECCConnectionHandler:
                 elif kind == "cableCheck":
                     voltage = payload.get("voltage")
                     # Implement cable check logic here
-                    response_payload = {"cableCheckResult": "valid", "voltage": self.session.get_voltage_demand()}
+                    voltage = await self.session.get_voltage_demand()
+                    response_payload = {"cableCheckResult": "valid", "voltage": voltage}
                 elif kind == "targetValues":
                     target_current = payload.get("targetCurrent")
                     target_voltage = payload.get("targetVoltage")

@@ -1,4 +1,4 @@
-from gpio_config import GPIO_PIN
+from contactor_handler.gpio_config import GPIO_PIN
 import os
 
 class GPIOController:
