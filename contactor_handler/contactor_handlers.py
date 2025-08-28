@@ -47,3 +47,16 @@ def interactive_loop(obj):
 if __name__ == "__main__":
     controller = GPIOController(GPIO_PIN.GPIO_PINS)
     interactive_loop(controller)
+
+    # # ===========================================
+    # # Global Data
+    # module_data = 0x0000   # 16 Bit, Module list. Bit 0 to Bit 3 represents Gun ID and Bit 4 to Bit 15 is  module list.
+    # contactor_data = 0x0000000000   # All contactor Status. Each bit represents each Contactor. 32bit integer.
+    # contactor_list = func1(module_data)   # This function should update the contactor_data variable.
+    # func2()  # Should run as a thread and scan the 32 bit data and also 
+
+
+
+
+
+
