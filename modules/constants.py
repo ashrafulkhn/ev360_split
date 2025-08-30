@@ -1,96 +1,102 @@
-
 FULL_POWER = 60  # This represents combined power configuration from all the modules in Kilo Watts(kW)
+TOTAL_DIN = 8
+TOTAL_DOUT = 32
+TOTAL_GUN = 12
 
 class CanId:
-    # CAN IDs for Sending Message to Power Modules.
-    CAN_ID_1 = 0x02204000
-    CAN_ID_2 = 0x02208000
-    CAN_ID_3 = 0x0220C000
-    CAN_ID_4 = 0x02210000
-    CAN_ID_5 = 0x02214000
-    CAN_ID_6 = 0x02218000
-    CAN_ID_7 = 0x0221C000
-    CAN_ID_8 = 0x02220000
-    CAN_ID_9 = 0x02224000
+    # # CAN IDs for Sending Message to Power Modules.
+    # Default, Which was working earlier
+    # CAN_ID_1 = 0x02204000
+    # CAN_ID_2 = 0x02208000
+    # CAN_ID_3 = 0x0220C000
+    # CAN_ID_4 = 0x02210000
+    # CAN_ID_5 = 0x02214000
+    # CAN_ID_6 = 0x02218000
+    # CAN_ID_7 = 0x0221C000
+    # CAN_ID_8 = 0x02220000
+    # CAN_ID_9 = 0x02224000
+    # CAN_ID_10 = 0x02228000
+    # CAN_ID_11 = 0x0222C000
+    # CAN_ID_12 = 0x02230000
+    
+    # New IDs
+    CAN_ID_1  = 0x02204000
+    CAN_ID_2  = 0x02208000
+    CAN_ID_3  = 0x0220C000
+    CAN_ID_4  = 0x02210000
+    CAN_ID_5  = 0x02214000
+    CAN_ID_6  = 0x02218000
+    CAN_ID_7  = 0x0221C000
+    CAN_ID_8  = 0x02220000
+    CAN_ID_9  = 0x02224000
     CAN_ID_10 = 0x02228000
     CAN_ID_11 = 0x0222C000
     CAN_ID_12 = 0x02230000
-    # CAN IDs for recievving Message from Power Modules are Extracted from the Serial Number of the Modules
-
+    
+    # CAN IDs for recieving Message from Power Modules are Extracted from the Serial Number of the Modules
     DIGITAL_OUT1 = 0xD00
     DIGITAL_OUT2 = 0xE00
     DIGITAL_OUT3 = 0xF00
     DIGITAL_OUT4 = 0x110
     DIGITAL_OUT5 = 0x120
     DIGITAL_OUT6 = 0x130
-    PECC_POWER_VOLTAGE_L2 = 0x204
-    PECC_CURRENT_L2 = 0x205
-    PECC_STATUS1_Gun2 = 0x202
-    PECC_STATUS2_Gun2 = 0x203
-    STOP_GUN2 = 0x209
-    PECC_POWER_VOLTAGE_L1 = 0x104
-    PECC_CURRENT_L1 = 0x105
-    PECC_STATUS1_GUN1 = 0x102
-    PECC_STATUS2_GUN1 = 0x103
-    STOP_GUN1 = 0x109
-    PECC_POWER_VOLTAGE_L3 = 0x304
-    PECC_CURRENT_L3 = 0x305
-    PECC_STATUS1_GUN3 = 0x302
-    PECC_STATUS2_GUN3 = 0x303
-    STOP_GUN3 = 0x309
-    PECC_POWER_VOLTAGE_L4 = 0x404
-    PECC_CURRENT_L4 = 0x405
-    PECC_STATUS1_GUN4 = 0x402
-    PECC_STATUS2_GUN4 = 0x403
-    STOP_GUN4 = 0x409
-    PECC_POWER_VOLTAGE_L5 = 0x504
-    PECC_CURRENT_L5 = 0x505
-    PECC_STATUS1_GUN5 = 0x502
-    PECC_STATUS2_GUN5 = 0x503
-    STOP_GUN5 = 0x509
-    PECC_POWER_VOLTAGE_L6 = 0x604
-    PECC_CURRENT_L6 = 0x605
-    PECC_STATUS1_GUN6 = 0x602
-    PECC_STATUS2_GUN6 = 0x603
-    STOP_GUN6 = 0x609
-    PECC_POWER_VOLTAGE_L7 = 0x704
-    PECC_CURRENT_L7 = 0x705
-    PECC_STATUS1_GUN7 = 0x702
-    PECC_STATUS2_GUN7 = 0x703
-    STOP_GUN7 = 0x709
-    PECC_POWER_VOLTAGE_L8 = 0x804
-    PECC_CURRENT_L8 = 0x805
-    PECC_STATUS1_GUN8 = 0x802
-    PECC_STATUS2_GUN8 = 0x803
-    STOP_GUN8 = 0x809
-    PECC_POWER_VOLTAGE_L9 = 0x904
-    PECC_CURRENT_L9 = 0x905
-    PECC_STATUS1_GUN9 = 0x902
-    PECC_STATUS2_GUN9 = 0x903
-    STOP_GUN9 = 0x909
-    PECC_POWER_VOLTAGE_L10 = 0xA04
-    PECC_CURRENT_L10 = 0xA05
-    PECC_STATUS1_GUN10 = 0xA02
-    PECC_STATUS2_GUN10 = 0xA03
-    STOP_GUN10 = 0xA09
-    PECC_POWER_VOLTAGE_L11 = 0xB04
-    PECC_CURRENT_L11 = 0xB05
-    PECC_STATUS1_GUN11 = 0xB02
-    PECC_STATUS2_GUN11 = 0xB03
-    STOP_GUN11 = 0xB09
-    PECC_POWER_VOLTAGE_L12 = 0xC04
-    PECC_CURRENT_L12 = 0xC05
-    PECC_STATUS1_GUN12 = 0xC02
-    PECC_STATUS2_GUN12 = 0xC03
-    STOP_GUN12 = 0xC09
 
 class ModuleDataModel:
-    module_data = {"MODULE1": {
-        "VOLTAGE" : 0,
-        "CURRENT" : 0,
+    module_data = {
+        "MODULE1": {
+            "VOLTAGE" : 690,
+            "CURRENT" : 0,
         },
-    "MODULE1": {
-        "VOLTAGE" : 0,
-        "CURRENT" : 0,
+        "MODULE2": {
+            "VOLTAGE" : 500,
+            "CURRENT" : 0,
+        },
+        "MODULE3": {
+            "VOLTAGE" : 448,
+            "CURRENT" : 1,
+        },
+        "MODULE4": {
+            "VOLTAGE" : 450,
+            "CURRENT" : 0,
+        },
+        "MODULE5": {
+            "VOLTAGE" : 0,
+            "CURRENT" : 0,
+        },
+        "MODULE6": {
+            "VOLTAGE" : 490,
+            "CURRENT" : 0,
+        },
+        "MODULE7": {
+            "VOLTAGE" : 300,
+            "CURRENT" : 0,
+        },
+        "MODULE8": {
+            "VOLTAGE" : 450,
+            "CURRENT" : 0,
+        },
+        "MODULE9": {
+            "VOLTAGE" : 392,
+            "CURRENT" : 0,
+        },
+        "MODULE10": {
+            "VOLTAGE" : 0,
+            "CURRENT" : 0,
+        },
+        "MODULE11": {
+            "VOLTAGE" : 0,
+            "CURRENT" : 0,
+        },
+        "MODULE12": {
+            "VOLTAGE" : 0,
+            "CURRENT" : 0,
         }
     }
+
+class assignedModules:
+    module_list_per_gun = {f"GUN{i+1}": [] for i in range(TOTAL_GUN)}    # Data format here is module_list_per_gun = {"GUN1" : [], "GUN2": []}
+
+class DigitalInputOutput:
+    digitalInput_data = {f"DIN{i+1}": 0 for i in range(TOTAL_DIN)}
+    digitalOutput_data = {f"DOUT{i+1}": 0 for i in range(TOTAL_DOUT)}
+
