@@ -1,6 +1,7 @@
 from constants import CanId, assignedModules
 from message_helper import ModuleMessage as mm
 import threading
+from read_module.read_module_data import perform_action
 
 def update_module():
     import random
@@ -33,10 +34,21 @@ if __name__ == "__main__":
     def manage_modules():
         import time
         from message_helper import ModuleMessage as mm
+        from constants import assignedModules
         while True:
             print("manage_modules thread running...")
             mm.sync_active_modules()
+            # Get all active module CAN IDs
+            active_can_ids = set()
+            for module_list in assignedModules.module_list_per_gun.values():
+                active_can_ids.update(module_list)
+            # Request voltage and current for each active module
+            for can_id in active_can_ids:
+                mm.requestModule_Voltage(can_id)
+                mm.requestModule_Current(can_id)
             time.sleep(0.500)
+
+    perform_action()
 
     th1 = threading.Thread(target=update_module)
     th2 = threading.Thread(target=manage_modules)

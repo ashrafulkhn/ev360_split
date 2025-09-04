@@ -19,7 +19,6 @@ def build_identifier(protocol, monitor_addr, module_addr, prod_date=0, serial_lo
 
     return identifier
 
-
 # Example: Protocol=0x1, Monitor=0x1, Module IDs 0x01..0x0F
 if __name__ == "__main__":
     protocol = 0x01

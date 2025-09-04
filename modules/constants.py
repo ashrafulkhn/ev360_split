@@ -1,7 +1,12 @@
+from config_manager import ConfigManager
+
+config = ConfigManager()
+
 FULL_POWER = 60  # This represents combined power configuration from all the modules in Kilo Watts(kW)
 TOTAL_DIN = 8
 TOTAL_DOUT = 32
 TOTAL_GUN = 12
+TOTAL_MODULE = config.get_total_modules()
 
 class CanId:
     # # CAN IDs for Sending Message to Power Modules.
@@ -19,6 +24,7 @@ class CanId:
     # CAN_ID_11 = 0x0222C000
     # CAN_ID_12 = 0x02230000
     
+
     # New IDs
     CAN_ID_1  = 0x02204000
     CAN_ID_2  = 0x02208000
@@ -92,6 +98,30 @@ class ModuleDataModel:
             "CURRENT" : 0,
         }
     }
+    # Dynamically initialize read_module_data for all modules
+    read_module_data = {
+        f"MODULE{i+1}": {
+            "VOLTAGE": 0,
+            "CURRENT": 0,
+            "TEMPERATURE": 0
+        } for i in range(TOTAL_MODULE)
+    }
+
+    @classmethod
+    def set_module_value(cls, module_num, key, value):
+        module_key = f"MODULE{module_num}"
+        if module_key in cls.read_module_data and key in cls.read_module_data[module_key]:
+            cls.read_module_data[module_key][key] = value
+        else:
+            raise KeyError(f"Invalid module or key: {module_key}, {key}")
+
+    @classmethod
+    def get_module_value(cls, module_num, key):
+        module_key = f"MODULE{module_num}"
+        if module_key in cls.read_module_data and key in cls.read_module_data[module_key]:
+            return cls.read_module_data[module_key][key]
+        else:
+            raise KeyError(f"Invalid module or key: {module_key}, {key}")
 
 class assignedModules:
     module_list_per_gun = {f"GUN{i+1}": [] for i in range(TOTAL_GUN)}    # Data format here is module_list_per_gun = {"GUN1" : [], "GUN2": []}
