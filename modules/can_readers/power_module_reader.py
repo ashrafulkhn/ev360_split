@@ -37,4 +37,4 @@ class PowerModuleReader(BaseReader):
             #     module_temperature = ...
             #     ModuleDataModel.set_module_value(module_id, "TEMPERATURE", module_temperature)
 
-            print(f"INFO: READ MODULE{module_id} - V: {module_voltage}, I: {module_current}")
+            # print(f"INFO: READ MODULE{module_id} - V: {module_voltage}, I: {module_current}")
