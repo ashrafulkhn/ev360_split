@@ -28,7 +28,7 @@ def update_module():
             modules_per_gun[gun].append(can_id)
         assignedModules.module_list_per_gun = modules_per_gun
         print(f"Updated module assignments: {assignedModules.module_list_per_gun}")
-        time.sleep(10)
+        time.sleep(30)
 
 if __name__ == "__main__":
     def manage_modules():
@@ -48,12 +48,15 @@ if __name__ == "__main__":
                 mm.requestModule_Current(can_id)
             time.sleep(0.500)
 
-    perform_action()
+    # perform_action()
 
     th1 = threading.Thread(target=update_module)
     th2 = threading.Thread(target=manage_modules)
+    th3 = threading.Thread(target=perform_action)  # Run perform_action in a thread
     th1.start()
     th2.start()
+    th3.start()
     print("Threads started.")
     th1.join()
     th2.join()
+    th3.join()

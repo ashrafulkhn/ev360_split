@@ -98,6 +98,7 @@ class ModuleDataModel:
             "CURRENT" : 0,
         }
     }
+
     # Dynamically initialize read_module_data for all modules
     read_module_data = {
         f"MODULE{i+1}": {
