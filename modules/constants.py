@@ -55,16 +55,16 @@ class ModuleDataModel:
             "CURRENT" : 10,
         },
         "MODULE2": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
+            "VOLTAGE" : 0,
+            "CURRENT" : 0,
         },
         "MODULE3": {
             "VOLTAGE" : 600,
             "CURRENT" : 10,
         },
         "MODULE4": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 5,
+            "VOLTAGE" : 0,
+            "CURRENT" : 0,
         },
         "MODULE5": {
             "VOLTAGE" : 600,
@@ -131,4 +131,3 @@ class assignedModules:
 class DigitalInputOutput:
     digitalInput_data = {f"DIN{i+1}": 0 for i in range(TOTAL_DIN)}
     digitalOutput_data = {f"DOUT{i+1}": 0 for i in range(TOTAL_DOUT)}
-

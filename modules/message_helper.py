@@ -40,6 +40,7 @@ class ModuleMessage:
                 cls.setModule("STOP", can_id)
             else:
                 cls.setModule("START", can_id)
+                time.sleep(.05)
                 current = ModuleDataModel.module_data[module_name]["CURRENT"] if module_name else 0
                 cls.setVoltage(voltage, can_id)
                 cls.setCurrent(current, can_id)
@@ -69,6 +70,13 @@ class ModuleMessage:
         # add current request value
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[
             18, 48, 0, 0, 0, 0, 0, 0])
+        # print(f"[CAN] requestModule_Current: CAN_ID={hex(can_id)}, data={message.data}")
+        cls.bus.send(message)
+    @classmethod
+    def requestModule_Temperature(cls, can_id):
+        # add current request value
+        message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[
+            18, 30, 0, 0, 0, 0, 0, 0])
         # print(f"[CAN] requestModule_Current: CAN_ID={hex(can_id)}, data={message.data}")
         cls.bus.send(message)
 
