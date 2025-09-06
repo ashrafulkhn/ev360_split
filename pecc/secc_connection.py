@@ -33,6 +33,18 @@ class SECCConnectionHandler:
         self.start_info_sender()
         try:
             from pecc.messages import PEPWSMessageProcessor
+            from modules.constants import DemandDataModel, assignedModules
+            # Import your module assignment logic (replace with actual import if needed)
+            # from modules.module_assignment import assign_modules_for_gun
+            def assign_modules_for_gun(gun_id, voltage, current):
+                # Placeholder: implement your assignment logic here
+                # Example: assign all modules if voltage > 0
+                if voltage > 0:
+                    assignedModules.module_list_per_gun[gun_id] = list(range(1, 13))
+                else:
+                    assignedModules.module_list_per_gun[gun_id] = []
+                # Start/manage module thread here if needed
+                # ...existing code...
             async for message in self.websocket:
                 log_info(f"Received message from SECC {self.path}: {message}")
                 msg, err = PEPWSMessageProcessor.parse_message(message)
@@ -88,6 +100,14 @@ class SECCConnectionHandler:
                 elif kind == "cableCheck":
                     voltage = payload.get("voltage")
                     # Implement cable check logic here
+                    # Update demand model for gun (voltage only)
+                    DemandDataModel.set_demand(self.gun_id, voltage, 0)
+                    # Assign modules for gun based on demand
+                    assign_modules_for_gun(self.gun_id, voltage, 0)
+                    # Start module management threads if not already running
+                    from modules.gun_module_helpers import GunModuleHelper
+                    if not GunModuleHelper.is_module_management_running():
+                        GunModuleHelper.start_module_management()
                     voltage = await self.session.get_voltage_demand()
                     response_payload = {"cableCheckResult": "valid", "voltage": voltage}
                 elif kind == "targetValues":
@@ -95,6 +115,10 @@ class SECCConnectionHandler:
                     target_voltage = payload.get("targetVoltage")
                     soc = payload.get("batteryStateOfCharge")
                     charging_state = payload.get("chargingState")
+                    # Update demand model for gun (voltage and current)
+                    DemandDataModel.set_demand(self.gun_id, target_voltage, target_current)
+                    # Assign modules for gun based on demand
+                    assign_modules_for_gun(self.gun_id, target_voltage, target_current)
                     if target_current is not None:
                         await self.session.set_current_demand(target_current)
                     if target_voltage is not None:

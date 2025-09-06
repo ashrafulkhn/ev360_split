@@ -601,3 +601,36 @@ If a contactorsStatus request could not be processed due to the CP/PP supervisio
 ---
 
 <!-- End of reformatted protocol document. -->
+
+
+#### 6.1 Charging Sequence
+> The SECC opens a WebSocket connection to the PECC.
+> As soon as the WebSocket connection is established, the info – status message is sent periodically to PECC
+> The configuration can be requested by SECC to PECC once or periodically by the SECC at any time.
+> The EV triggers the charging process.
+> The cable check result "valid" is needed to continue.
+> When the cable check voltage arrives update the demand dictionary.
+> Based on demand dictionary, Assign the required power modules to the gun and update the AssignedModules per gun dictionary.
+> Update the module data  with the cable check voltage.
+> As the voltage is assigned the manage and sync thread should start that particular module start reading their parameters as tested earlier.
+class ModuleDataModel:
+    module_data = {
+        "MODULE1": {
+            "VOLTAGE" : 0,
+            "CURRENT" : 0,
+        },
+> The read voltage and current should be updated to the info message we are sending for that particular Gun. And keep updating with the voltage and currecnt till the charging session is over.
+> In the pre-charging phase, multiple targetValues requests may be received by the PECC.
+> Again update the module requrired for that Gun. Update the assigned module and update the demand dict dynamically. Maintain a dictionary to for active Guns and also update their voltage and current demands.
+
+After the active gun list is updated. Update the demand to the dict. Based on the demand assign modules for the gun and update the asssign module per gun dict, start all modules which are their on the list along using the thread we have already discussed earlier. 
+
+ class ModuleDataModel:
+    module_data = {
+        "MODULE1": {
+            "VOLTAGE" : 0,
+            "CURRENT" : 0,
+        },
+> The charging phase begins as soon as a targetValues request is received with chargingState set to "charge".
+> The charging process ends with a targetValues request with the chargingState set to "postCharge". The requested voltage and current is set to 0. The EV may then perform an optional welding detection of its internal contactors. After this phase, the reset request is sent and the EV unplugs.
+> The evConnectionState message gets sent when the EV signals the corresponding state.
