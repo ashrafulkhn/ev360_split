@@ -40,6 +40,7 @@ class ModuleMessage:
                 cls.setModule("STOP", can_id)
             else:
                 cls.setModule("START", can_id)
+                time.sleep(.05)
                 current = ModuleDataModel.module_data[module_name]["CURRENT"] if module_name else 0
                 cls.setVoltage(voltage, can_id)
                 cls.setCurrent(current, can_id)
@@ -53,13 +54,15 @@ class ModuleMessage:
         mode = 2 if (voltage <= 500) else 1
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[
             16, 95, 0, 0, 0, 0, 0, mode])    #b1=2 -lowmode, b1=1 -highmode
-        cls.bus.send(message)      
+        # print(f"[CAN] set_high_low_Mode: CAN_ID={hex(can_id)}, voltage={voltage}, mode={mode}, data={message.data}")
+        cls.bus.send(message)
 
     @classmethod
     def requestModule_Voltage(cls, can_id):
         #Add voltage request
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[
             18, 98, 0, 0, 0, 0, 0, 0])
+        # print(f"[CAN] requestModule_Voltage: CAN_ID={hex(can_id)}, data={message.data}")
         cls.bus.send(message)
 
     @classmethod
@@ -67,6 +70,14 @@ class ModuleMessage:
         # add current request value
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[
             18, 48, 0, 0, 0, 0, 0, 0])
+        # print(f"[CAN] requestModule_Current: CAN_ID={hex(can_id)}, data={message.data}")
+        cls.bus.send(message)
+    @classmethod
+    def requestModule_Temperature(cls, can_id):
+        # add current request value
+        message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[
+            18, 30, 0, 0, 0, 0, 0, 0])
+        # print(f"[CAN] requestModule_Current: CAN_ID={hex(can_id)}, data={message.data}")
         cls.bus.send(message)
 
     @classmethod
@@ -77,6 +88,7 @@ class ModuleMessage:
 
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[
             16, 4, 0, 0, 0, 0, 0, (0 if action == "START" else 1)])                                              # b2=0-startModule, b2=1 -stopModule
+        # print(f"[CAN] setModule: CAN_ID={hex(can_id)}, action={action}, data={message.data}")
         cls.bus.send(message)
 
     @classmethod
@@ -85,12 +97,12 @@ class ModuleMessage:
         cls.set_high_low_Mode(can_id=can_id, voltage=voltageValue)
         voltageValue_hex = DTH.convertohex(voltageValue)
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[16, 2, 0, 0, 0] + voltageValue_hex)
+        # print(f"[CAN] setVoltage: CAN_ID={hex(can_id)}, voltage={voltageValue}, data={message.data}")
         cls.bus.send(message)
 
     @classmethod
     def setCurrent(cls, currentValue, can_id):
-       
         currentvalue_hex = DTH.convertohex(currentValue)
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[16, 3, 0, 0, 0] + currentvalue_hex)
-
+        # print(f"[CAN] setCurrent: CAN_ID={hex(can_id)}, current={currentValue}, data={message.data}")
         cls.bus.send(message)

@@ -10,6 +10,6 @@ def readFromCan():
     bus = CanInterface.bus_instance
     for m in bus:
         readAllCanData(m)
- 
+
 def perform_action():
     readFromCan()

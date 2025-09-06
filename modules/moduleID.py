@@ -25,5 +25,5 @@ if __name__ == "__main__":
     monitor = 0x01
 
     for module in range(0x01, 0x10):  # 0x01 to 0x0F
-        can_id = build_identifier(protocol, monitor, module)
-        print(f"Module {module:02X} -> CAN ID: 0x{can_id:08X}")
+      can_id = build_identifier(protocol, monitor, module)
+      print(f"Module {module:02X} -> CAN ID: 0x{can_id:08X}")

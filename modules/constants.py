@@ -24,7 +24,6 @@ class CanId:
     # CAN_ID_11 = 0x0222C000
     # CAN_ID_12 = 0x02230000
     
-
     # New IDs
     CAN_ID_1  = 0x02204000
     CAN_ID_2  = 0x02208000
@@ -38,6 +37,8 @@ class CanId:
     CAN_ID_10 = 0x02228000
     CAN_ID_11 = 0x0222C000
     CAN_ID_12 = 0x02230000
+
+    
     
     # CAN IDs for recieving Message from Power Modules are Extracted from the Serial Number of the Modules
     DIGITAL_OUT1 = 0xD00
@@ -50,54 +51,55 @@ class CanId:
 class ModuleDataModel:
     module_data = {
         "MODULE1": {
-            "VOLTAGE" : 690,
-            "CURRENT" : 0,
+            "VOLTAGE" : 600,
+            "CURRENT" : 10,
         },
         "MODULE2": {
-            "VOLTAGE" : 500,
+            "VOLTAGE" : 0,
             "CURRENT" : 0,
         },
         "MODULE3": {
-            "VOLTAGE" : 448,
-            "CURRENT" : 1,
+            "VOLTAGE" : 600,
+            "CURRENT" : 10,
         },
         "MODULE4": {
-            "VOLTAGE" : 450,
+            "VOLTAGE" : 0,
             "CURRENT" : 0,
         },
         "MODULE5": {
-            "VOLTAGE" : 0,
-            "CURRENT" : 0,
+            "VOLTAGE" : 600,
+            "CURRENT" : 10,
         },
         "MODULE6": {
-            "VOLTAGE" : 490,
-            "CURRENT" : 0,
+            "VOLTAGE" : 600,
+            "CURRENT" : 10,
         },
         "MODULE7": {
-            "VOLTAGE" : 300,
-            "CURRENT" : 0,
+            "VOLTAGE" : 600,
+            "CURRENT" : 10,
         },
         "MODULE8": {
-            "VOLTAGE" : 450,
-            "CURRENT" : 0,
+            "VOLTAGE" : 600,
+            "CURRENT" : 10,
         },
         "MODULE9": {
-            "VOLTAGE" : 392,
-            "CURRENT" : 0,
+            "VOLTAGE" : 600,
+            "CURRENT" : 10,
         },
         "MODULE10": {
-            "VOLTAGE" : 0,
-            "CURRENT" : 0,
+            "VOLTAGE" : 600,
+            "CURRENT" : 10,
         },
         "MODULE11": {
-            "VOLTAGE" : 0,
-            "CURRENT" : 0,
+            "VOLTAGE" : 600,
+            "CURRENT" : 10,
         },
         "MODULE12": {
-            "VOLTAGE" : 0,
-            "CURRENT" : 0,
+            "VOLTAGE" : 600,
+            "CURRENT" : 10,
         }
     }
+
     # Dynamically initialize read_module_data for all modules
     read_module_data = {
         f"MODULE{i+1}": {
@@ -129,4 +131,3 @@ class assignedModules:
 class DigitalInputOutput:
     digitalInput_data = {f"DIN{i+1}": 0 for i in range(TOTAL_DIN)}
     digitalOutput_data = {f"DOUT{i+1}": 0 for i in range(TOTAL_DOUT)}
-

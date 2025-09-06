@@ -26,15 +26,19 @@ class PowerModuleReader(BaseReader):
                 volatge_power_module = binaryToDecimal(int(bd[4] + bd[5] + bd[6] + bd[7]))
                 module_voltage = ((volatge_power_module) / 1000)
                 ModuleDataModel.set_module_value(module_id, "VOLTAGE", module_voltage)
+                # Print full module data after voltage update
+                # print(f"INFO: MODULE{module_id} DATA AFTER VOLTAGE UPDATE: {ModuleDataModel.read_module_data[f'MODULE{module_id}']}")
 
             # Read and Store Current Value
             if self._diff_vol_current == 48:
                 current_power_module = binaryToDecimal(int(bd[4] + bd[5] + bd[6] + bd[7]))
                 module_current = int(current_power_module/1000)
                 ModuleDataModel.set_module_value(module_id, "CURRENT", module_current)
+                # Print full module data after current update
+                print(f"INFO: MODULE{module_id} DATA AFTER CURRENT UPDATE: {ModuleDataModel.read_module_data[f'MODULE{module_id}']}")
             # If temperature is available, update similarly:
-            # if self._diff_vol_current == <temp_code>:
-            #     module_temperature = ...
-            #     ModuleDataModel.set_module_value(module_id, "TEMPERATURE", module_temperature)
+            if self._diff_vol_current == 30:
+                module_temperature = binaryToDecimal(int(bd[4] + bd[5] + bd[6] + bd[7]))
+                ModuleDataModel.set_module_value(module_id, "TEMPERATURE", module_temperature/1000)
 
-            print(f"INFO: READ MODULE{module_id} - V: {module_voltage}, I: {module_current}")
+            # print(f"INFO: READ MODULE{module_id} - V: {module_voltage}, I: {module_current}")

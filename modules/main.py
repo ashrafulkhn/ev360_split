@@ -4,31 +4,17 @@ import threading
 from read_module.read_module_data import perform_action
 
 def update_module():
-    import random
     import time
-    from constants import CanId, assignedModules
-    gun_keys = list(assignedModules.module_list_per_gun.keys())
-    all_can_ids = [getattr(CanId, f"CAN_ID_{i}") for i in range(1, 13)]
-    cycle_sizes = [5, 12, 6, 8, 3, 10]  # Example drastic changes
-    cycle_idx = 0
+    from constants import CanId, assignedModules, TOTAL_GUN
+    gun_keys = [f"GUN{i+1}" for i in range(TOTAL_GUN)]
+    all_can_ids = [getattr(CanId, f"CAN_ID_{i+1}") for i in range(TOTAL_GUN)]
     while True:
         print("update_module thread running...")
-        available_can_ids = all_can_ids.copy()
-        new_assignment = {}
-        # Pick a random cycle size for this iteration
-        num_modules = cycle_sizes[cycle_idx % len(cycle_sizes)]
-        cycle_idx += 1
-        # Randomly select num_modules from all_can_ids
-        selected_modules = random.sample(all_can_ids, num_modules)
-        # Distribute selected modules randomly among guns
-        random.shuffle(gun_keys)
-        modules_per_gun = {gun: [] for gun in gun_keys}
-        for can_id in selected_modules:
-            gun = random.choice(gun_keys)
-            modules_per_gun[gun].append(can_id)
+        # Static 1:1 mapping: GUN1->MODULE1, GUN2->MODULE2, ...
+        modules_per_gun = {gun: [can_id] for gun, can_id in zip(gun_keys, all_can_ids)}
         assignedModules.module_list_per_gun = modules_per_gun
-        print(f"Updated module assignments: {assignedModules.module_list_per_gun}")
-        time.sleep(10)
+        print(f"[STATIC TEST] Updated module assignments: {assignedModules.module_list_per_gun}")
+        time.sleep(30)   # Cycle every 60 Seconds to give some time to the modules to stabilise before reassignment.
 
 if __name__ == "__main__":
     def manage_modules():
@@ -42,18 +28,24 @@ if __name__ == "__main__":
             active_can_ids = set()
             for module_list in assignedModules.module_list_per_gun.values():
                 active_can_ids.update(module_list)
+
+            print(f"INFO: Active Module Can IDs: {active_can_ids}")
             # Request voltage and current for each active module
             for can_id in active_can_ids:
-                mm.requestModule_Voltage(can_id)
-                mm.requestModule_Current(can_id)
-            time.sleep(0.500)
+                mm.requestModule_Voltage(can_id=can_id)
+                mm.requestModule_Current(can_id=can_id)
+                mm.requestModule_Temperature(can_id=can_id)
+            time.sleep(1)
 
-    perform_action()
+    # perform_action()
 
     th1 = threading.Thread(target=update_module)
     th2 = threading.Thread(target=manage_modules)
+    th3 = threading.Thread(target=perform_action)  # Run perform_action in a thread
     th1.start()
     th2.start()
+    th3.start()
     print("Threads started.")
     th1.join()
     th2.join()
+    th3.join()
