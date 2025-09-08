@@ -1,7 +1,7 @@
 import can
-from caninterface import CanInterface
-from constants import CanId, assignedModules, ModuleDataModel
-from utility import DTH
+from modules.caninterface import CanInterface
+from modules.constants import CanId, assignedModules, ModuleDataModel
+from modules.utility import DTH
 import threading
 import time
 

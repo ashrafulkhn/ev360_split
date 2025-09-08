@@ -1,7 +1,7 @@
 
 import logging
-from can_readers.power_module_reader import PowerModuleReader
-from constants import *
+from modules.can_readers.power_module_reader import PowerModuleReader
+from modules.constants import *
 
 #logger = logging.getLogger(__name__)
 

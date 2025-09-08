@@ -1,11 +1,12 @@
 import configparser
 
 class ConfigManager:
-    def __init__(self, config_path="module_config.ini"):
+    def __init__(self, config_path="modules/module_config.ini"):
         self.config = configparser.ConfigParser()
         self.config.read(config_path)
 
     def get_total_modules(self):
+        # print("INFO: Get Total Power Module.")
         return int(self.config["total_power_module"]["TOTAL_MODULE"])
 
     def get_power_config(self, key):

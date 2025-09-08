@@ -1,8 +1,8 @@
-from config_manager import ConfigManager
+from modules.config_manager import ConfigManager
 import logging
-from base_reader import BaseReader
-from constants import *
-from utility import bytetobinary, binaryToDecimal, DTH
+from modules.base_reader import BaseReader
+from modules.constants import *
+from modules.utility import bytetobinary, binaryToDecimal, DTH
 
 #logger = logging.getLogger(__name__)
 

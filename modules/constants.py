@@ -1,4 +1,5 @@
-from config_manager import ConfigManager
+# from config_manager import ConfigManager
+from modules.config_manager import ConfigManager
 
 config = ConfigManager()
 

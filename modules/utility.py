@@ -8,16 +8,13 @@ def binaryToDecimal(binary):
         i += 1
     return decimal
 
-
 def bytetobinary(x):
     b = []
     for my_byte in x:
         b.append(f'{my_byte:0>8b}')
     return b
 
-
 class DTH:
-
     @staticmethod
     def convertohex(val):
         arr = []
