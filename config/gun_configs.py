@@ -25,7 +25,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax": 60,
         "limitPowerMin": 0,
-        "limitPowerMax": 35000,
+        "limitPowerMax": 60000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
@@ -40,7 +40,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax": 60,
         "limitPowerMin": 0,
-        "limitPowerMax": 35000,
+        "limitPowerMax": 90000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
@@ -55,7 +55,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax": 60,
         "limitPowerMin": 0,
-        "limitPowerMax": 35000,
+        "limitPowerMax": 120000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
@@ -70,7 +70,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax": 60,
         "limitPowerMin": 0,
-        "limitPowerMax": 35000,
+        "limitPowerMax": 150000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
@@ -85,7 +85,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax": 60,
         "limitPowerMin": 0,
-        "limitPowerMax": 35000,
+        "limitPowerMax": 180000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
@@ -100,7 +100,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax": 60,
         "limitPowerMin": 0,
-        "limitPowerMax": 35000,
+        "limitPowerMax": 210000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
@@ -115,7 +115,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax": 60,
         "limitPowerMin": 0,
-        "limitPowerMax": 35000,
+        "limitPowerMax": 240000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
@@ -130,7 +130,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax": 60,
         "limitPowerMin": 0,
-        "limitPowerMax": 35000,
+        "limitPowerMax": 270000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
@@ -145,7 +145,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax": 60,
         "limitPowerMin": 0,
-        "limitPowerMax": 35000,
+        "limitPowerMax": 300000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
@@ -160,7 +160,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax": 60,
         "limitPowerMin": 0,
-        "limitPowerMax": 35000,
+        "limitPowerMax": 330000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
@@ -175,7 +175,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax": 60,
         "limitPowerMin": 0,
-        "limitPowerMax": 35000,
+        "limitPowerMax": 360000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
@@ -183,3 +183,20 @@ gun_configs = {
         "floatValues": True
     },
 }
+
+
+# class communication_model:
+#     {"info": {
+#         "request": {
+#             "configuration" : gun_configs.get("GUN12"),
+#             "cablecheck"    : {},
+#             "targetVAlue"    : {
+#                 "targetVoltage" : DATA_MODEL.getVolatge("GUN1"),
+#             },
+#         }
+#     },
+#         "response": {
+#             "configuration" : gun_configs.get("GUN12"),
+#             "cablecheck"    : {},
+#         }
+#     }

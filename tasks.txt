@@ -1,0 +1,4 @@
+- QT (Proposal follow ups)
+- Split Design
+- UI Design Followups
+- Mechanical desing followups

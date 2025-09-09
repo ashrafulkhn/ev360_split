@@ -12,20 +12,21 @@ class SECCConnectionHandler:
     def start_info_sender(self):
         from pecc.info_sender import InfoMessageSender
         self.info_sender = InfoMessageSender(self.websocket, self.session, self.gun_id)
-        self.info_task = asyncio.create_task(self.info_sender.send_status(0.5))     # Time interval for sending info message.
+        self.info_task = asyncio.create_task(self.info_sender.send_status(3))     # Time interval for sending info message.
 
     def stop_info_sender(self):
         if hasattr(self, 'info_sender'):
             self.info_sender.stop()
         if hasattr(self, 'info_task'):
             self.info_task.cancel()
-    def __init__(self, websocket, path):
+    def __init__(self, websocket, path, server=None):
         self.websocket = websocket
         self.path = path
         self.active = True
         # Extract gun id from path, e.g., '/GUN5' -> 'GUN5'
         self.gun_id = path.lstrip('/') if path else None
         self.session = GunSession(self.gun_id)
+        self.server = server  # Reference to main server for contactor logic
 
     async def run(self):
         log_info(f"Handler started for SECC: {self.path}")
@@ -58,6 +59,12 @@ class SECCConnectionHandler:
                     # Log info kinds
                     if kind in ["event", "status", "evConnectionState", "chargingSession"]:
                         log_info(f"Received info message from SECC {self.path}: kind={kind}, payload={payload}")
+                        # Track evConnectionState and update contactor
+                        if kind == "evConnectionState" and self.server:
+                            state = payload.get("evConnectionState")
+                            if self.gun_id and state:
+                                self.server.gun_connection_state[self.gun_id] = state
+                                self.server.update_contactor()
                     else:
                         log_info(f"Received unknown info kind from SECC {self.path}: kind={kind}, payload={payload}")
                     continue  # Do not reply
@@ -76,11 +83,12 @@ class SECCConnectionHandler:
                     if voltage is not None:
                         await self.session.set_voltage_demand(voltage)
                     from config.gun_configs import gun_configs
-                    config = gun_configs.get(self.gun_id, gun_configs.get("GUN1"))
+                    config = gun_configs.get(self.gun_id, gun_configs.get(self.gun_id))
                     response_payload = config
                 elif kind == "cableCheck":
                     voltage = payload.get("voltage")
                     # Implement cable check logic here
+                    voltage = await self.session.get_voltage_demand()
                     response_payload = {"cableCheckResult": "valid", "voltage": voltage}
                 elif kind == "targetValues":
                     target_current = payload.get("targetCurrent")
