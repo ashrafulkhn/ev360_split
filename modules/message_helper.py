@@ -36,12 +36,17 @@ class ModuleMessage:
             voltage = None
             if module_name:
                 voltage = ModuleDataModel.module_data[module_name]["VOLTAGE"]
+            # Defensive: treat None as 0
+            if voltage is None:
+                voltage = 0
             if voltage == 0:
                 cls.setModule("STOP", can_id)
             else:
                 cls.setModule("START", can_id)
                 time.sleep(.05)
                 current = ModuleDataModel.module_data[module_name]["CURRENT"] if module_name else 0
+                if current is None:
+                    current = 0
                 cls.setVoltage(voltage, can_id)
                 cls.setCurrent(current, can_id)
         # Stop all modules not currently assigned

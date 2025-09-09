@@ -101,11 +101,19 @@ class SECCConnectionHandler:
                     response_payload = config
                 elif kind == "cableCheck":
                     voltage = payload.get("voltage")
-                    # Implement cable check logic here
+                    # Defensive: treat None as 0
+                    if voltage is None:
+                        voltage = 0
                     # Update demand model for gun (voltage only)
                     DemandDataModel.set_demand(self.gun_id, voltage, 0)
                     # Assign modules for gun based on demand
                     assign_modules_for_gun(self.gun_id, voltage, 0)
+                    # Propagate voltage to assigned module data
+                    from modules.constants import assignedModules, ModuleDataModel
+                    assigned = assignedModules.module_list_per_gun.get(self.gun_id, [])
+                    for module_num in assigned:
+                        ModuleDataModel.set_module_value(module_num, "VOLTAGE", voltage)
+                        ModuleDataModel.set_module_value(module_num, "CURRENT", 0)
                     # Start module management threads if not already running
                     from modules.gun_module_helpers import GunModuleHelper
                     if not GunModuleHelper.is_module_management_running():
