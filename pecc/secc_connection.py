@@ -33,9 +33,11 @@ class SECCConnectionHandler:
         self.start_info_sender()
         try:
             from pecc.messages import PEPWSMessageProcessor
+            print("Calling constants inside info sender.")
             from modules.constants import DemandDataModel, assignedModules
             # Import your module assignment logic (replace with actual import if needed)
             # from modules.module_assignment import assign_modules_for_gun
+            print("Info Sender imported.")
             def assign_modules_for_gun(gun_id, voltage, current):
                 # Placeholder: implement your assignment logic here
                 # Example: assign all modules if voltage > 0

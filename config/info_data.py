@@ -34,8 +34,8 @@ class InfoData:
         "drivenVoltage":  0,
         "drivenCurrent":  0,
         "temperature": 32.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
+        "contactorsStatus": "closed",
+        "isolationStatus": "valid",
         "operationalStatus": "operative"
         }
     gun2_info_data = {
@@ -44,8 +44,8 @@ class InfoData:
         "drivenVoltage":  0,
         "drivenCurrent":  0,
         "temperature": 33.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
+        "contactorsStatus": "closed",
+        "isolationStatus": "valid",
         "operationalStatus": "operative"
         }
     gun3_info_data = {
@@ -74,8 +74,8 @@ class InfoData:
         "drivenVoltage":  0,
         "drivenCurrent":  0,
         "temperature": 36.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
+        "contactorsStatus": "closed",
+        "isolationStatus": "valid",
         "operationalStatus": "operative"
         }
     gun6_info_data = {
@@ -84,8 +84,8 @@ class InfoData:
         "drivenVoltage":  0,
         "drivenCurrent":  0,
         "temperature": 37.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
+        "contactorsStatus": "closed",
+        "isolationStatus": "valid",
         "operationalStatus": "operative"
         }
     gun7_info_data = {
@@ -94,8 +94,8 @@ class InfoData:
         "drivenVoltage":  0,
         "drivenCurrent":  0,
         "temperature": 38.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
+        "contactorsStatus": "closed",
+        "isolationStatus": "valid",
         "operationalStatus": "operative"
         }
     gun8_info_data = {
@@ -104,8 +104,8 @@ class InfoData:
         "drivenVoltage":  0,
         "drivenCurrent":  0,
         "temperature": 39.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
+        "contactorsStatus": "closed",
+        "isolationStatus": "valid",
         "operationalStatus": "operative"
         }
     gun9_info_data = {
@@ -114,8 +114,8 @@ class InfoData:
         "drivenVoltage":  0,
         "drivenCurrent":  0,
         "temperature": 40.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
+        "contactorsStatus": "closed",
+        "isolationStatus": "valid",
         "operationalStatus": "operative"
         }
     gun10_info_data = {
@@ -124,8 +124,8 @@ class InfoData:
         "drivenVoltage":  0,
         "drivenCurrent":  0,
         "temperature": 41.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
+        "contactorsStatus": "closed",
+        "isolationStatus": "valid",
         "operationalStatus": "operative"
         }
     gun11_info_data = {
@@ -134,8 +134,8 @@ class InfoData:
         "drivenVoltage":  0,
         "drivenCurrent":  0,
         "temperature": 42.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
+        "contactorsStatus": "closed",
+        "isolationStatus": "valid",
         "operationalStatus": "operative"
         }
     gun12_info_data = {
@@ -144,7 +144,7 @@ class InfoData:
         "drivenVoltage":  0,
         "drivenCurrent":  0,
         "temperature": 43.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
+        "contactorsStatus": "closed",
+        "isolationStatus": "valid",
         "operationalStatus": "operative"
         }

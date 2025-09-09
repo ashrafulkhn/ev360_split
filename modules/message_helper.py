@@ -16,7 +16,7 @@ class ModuleMessage:
         sends voltage/current parameters, and stops all others.
         If voltage is zero, send STOP instead of START for that module.
         """
-        from constants import CanId, assignedModules, ModuleDataModel
+        from modules.constants import CanId, assignedModules, ModuleDataModel
         all_can_ids = [getattr(CanId, f"CAN_ID_{i}") for i in range(1, 13)]   # TODO: Add the maximum number of modules in the config file.
         current_active = set()
         for modules in assignedModules.module_list_per_gun.values():

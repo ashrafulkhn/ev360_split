@@ -31,7 +31,7 @@ class PECCServer:
 
     def update_contactor(self):
         # ON if any gun is 'connected', OFF if all are 'disconnected'
-        if any(state == "connected" for state in self.gun_connection_state.values()):
+        if any(state in ["connected", "energyTransferAllowed"] for state in self.gun_connection_state.values()):
             self.gpio_controller.set_value("GPIO2_IO01", 0)
         else:
             self.gpio_controller.set_value("GPIO2_IO01", 1)
