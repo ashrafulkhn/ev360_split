@@ -19,6 +19,15 @@ class SECCConnectionHandler:
             self.info_sender.stop()
         if hasattr(self, 'info_task'):
             self.info_task.cancel()
+            
+    def startModuleManagement(self):
+        # Example: Start async module management if needed (refactor manage_modules to async first)
+        try:
+            from modules.module_handler import manage_modules
+            self.module_manager = asyncio.create_task(manage_modules())
+        except ImportError:
+            pass  # If not implemented as async yet, skip
+
     def __init__(self, websocket, path, server=None):
         self.websocket = websocket
         self.path = path
@@ -27,17 +36,20 @@ class SECCConnectionHandler:
         self.gun_id = path.lstrip('/') if path else None
         self.session = GunSession(self.gun_id)
         self.server = server  # Reference to main server for contactor logic
+        # Optionally start async module management if you refactor it
+        # self.startModuleManagement()
 
     async def run(self):
         log_info(f"Handler started for SECC: {self.path}")
         self.start_info_sender()
         try:
             from pecc.messages import PEPWSMessageProcessor
-            print("Calling constants inside info sender.")
+            # print("Calling constants inside info sender.")
             from modules.constants import DemandDataModel, assignedModules
             # Import your module assignment logic (replace with actual import if needed)
             # from modules.module_assignment import assign_modules_for_gun
-            print("Info Sender imported.")
+            # print("Info Sender imported.")
+
             def assign_modules_for_gun(gun_id, voltage, current):
                 # Placeholder: implement your assignment logic here
                 # Example: assign all modules if voltage > 0

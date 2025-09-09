@@ -67,6 +67,12 @@ class PECCServer:
 
 # Entry point for running the server
 if __name__ == "__main__":
+    import threading
+    from modules.read_module.read_module_data import run_perform_action
+    read_can_thread = threading.Thread(target=run_perform_action)
+    read_can_thread.start()
+    read_can_thread.join()
+
     server = PECCServer()
     async def main():
         await server.start()

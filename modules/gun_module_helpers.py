@@ -34,7 +34,7 @@ class GunModuleHelper:
         """
         Starts manage_modules and perform_action threads if not already running.
         """
-        from modules.main import manage_modules, perform_action
+        from modules.handle_handler import manage_modules, perform_action
         if GunModuleHelper._manage_modules_thread is None or not GunModuleHelper._manage_modules_thread.is_alive():
             GunModuleHelper._manage_modules_thread = GunModuleHelper.threading.Thread(target=manage_modules, daemon=True)
             GunModuleHelper._manage_modules_thread.start()
