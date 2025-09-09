@@ -55,16 +55,16 @@ class ModuleDataModel:
             "CURRENT" : 10,
         },
         "MODULE2": {
-            "VOLTAGE" : 0,
-            "CURRENT" : 0,
+            "VOLTAGE" : 600,
+            "CURRENT" : 10,
         },
         "MODULE3": {
             "VOLTAGE" : 600,
             "CURRENT" : 10,
         },
         "MODULE4": {
-            "VOLTAGE" : 0,
-            "CURRENT" : 0,
+            "VOLTAGE" : 600,
+            "CURRENT" : 10,
         },
         "MODULE5": {
             "VOLTAGE" : 600,
