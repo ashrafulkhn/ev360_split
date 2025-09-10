@@ -6,7 +6,7 @@ from modules.read_module.read_module_data import perform_action
 def update_module(gun_id, voltage, current, state):
     from modules.constants import assignedModules, ModuleDataModel, CanId
     # Only assign module if gun is active (cablecheck, precharge, charging) and demand > 0
-    if state in ["cablecheck", "preCharge", "charging"] and (voltage > 0 or current > 0):
+    if state in ["cablecheck", "preCharge", "charging", "charge"] and (voltage > 0 or current > 0):
         module_num = int(gun_id.replace("GUN", ""))
         can_id = getattr(CanId, f"CAN_ID_{module_num}")
         assignedModules.module_list_per_gun[gun_id] = [can_id]

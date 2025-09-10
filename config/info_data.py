@@ -34,6 +34,6 @@ class InfoData:
             "drivenCurrent": 0,
             "temperature": temperature,
             "contactorsStatus": "open",
-            "isolationStatus": "invalid",
+            "isolationStatus": "valid",
             "operationalStatus": "operative"
         }

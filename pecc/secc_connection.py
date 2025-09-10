@@ -35,7 +35,7 @@ class SECCConnectionHandler:
         try:
             from pecc.messages import PEPWSMessageProcessor
             async for message in self.websocket:
-                log_info(f"Received message from SECC {self.path}: {message}")
+                log_info(f"<<<<< {self.path}: {message}")
                 msg, err = PEPWSMessageProcessor.parse_message(message)
                 if err:
                     log_error(f"Message parse error from SECC {self.path}: {err}")
@@ -122,7 +122,7 @@ class SECCConnectionHandler:
                     response_payload = {"contactorsStatus": status}
                 elif kind == "reset":
                     await self.session.transition_state(GunState.IDLE)
-                    update_module(self.gun_id, 0, 0, charging_state or "charging")
+                    update_module(self.gun_id, 0, 0, "reset")
                     response_payload = {"state": str(await self.session.get_state())}
                 elif kind == "getInput":
                     input_ids = payload.get("inputIdentifiers", [])
@@ -134,7 +134,7 @@ class SECCConnectionHandler:
                     response_payload = {"outputStatus": "ok"}
                 elif kind == "stopCharging":
                     await self.session.transition_state(GunState.STOPPED)
-                    update_module(self.gun_id, 0, 0, charging_state or "charging")
+                    update_module(self.gun_id, 0, 0, "stopCharging")
                     response_payload = {"state": str(await self.session.get_state())}
                 else:
                     log_error(f"Unknown request kind from SECC {self.path}: {kind}")
@@ -144,7 +144,7 @@ class SECCConnectionHandler:
                     continue
                 # Send response for request
                 resp = PEPWSMessageProcessor.build_response(msg, payload=response_payload)
-                log_info(f"Sending response to SECC {self.path}: {resp}")
+                log_info(f">>>>> {self.path}: {resp}")
                 await self.websocket.send(resp)
         except Exception as e:
             log_error(f"SECC handler error: {e}")
