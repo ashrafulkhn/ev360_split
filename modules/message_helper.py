@@ -1,9 +1,10 @@
 import can
-from caninterface import CanInterface
-from constants import CanId, assignedModules, ModuleDataModel
-from utility import DTH
+from modules.caninterface import CanInterface
+from modules.constants import CanId, assignedModules, ModuleDataModel
+from modules.utility import DTH
 import threading
 import time
+
 
 class ModuleMessage:
     bus = CanInterface.bus_instance
@@ -16,7 +17,7 @@ class ModuleMessage:
         sends voltage/current parameters, and stops all others.
         If voltage is zero, send STOP instead of START for that module.
         """
-        from constants import CanId, assignedModules, ModuleDataModel
+        from modules.constants import CanId, assignedModules, ModuleDataModel
         all_can_ids = [getattr(CanId, f"CAN_ID_{i}") for i in range(1, 13)]   # TODO: Add the maximum number of modules in the config file.
         current_active = set()
         for modules in assignedModules.module_list_per_gun.values():
@@ -25,7 +26,7 @@ class ModuleMessage:
         for can_id in current_active:
             # Find module name from CAN ID
             module_name = None
-            for name in ModuleDataModel.module_data:
+            for name in ModuleDataModel.set_module_data:
                 idx = name.replace("MODULE", "")
                 try:
                     if can_id == getattr(CanId, f"CAN_ID_{idx}"):
@@ -35,13 +36,13 @@ class ModuleMessage:
                     continue
             voltage = None
             if module_name:
-                voltage = ModuleDataModel.module_data[module_name]["VOLTAGE"]
+                voltage = ModuleDataModel.set_module_data[module_name]["VOLTAGE"]
             if voltage == 0:
                 cls.setModule("STOP", can_id)
             else:
                 cls.setModule("START", can_id)
                 time.sleep(.05)
-                current = ModuleDataModel.module_data[module_name]["CURRENT"] if module_name else 0
+                current = ModuleDataModel.set_module_data[module_name]["CURRENT"] if module_name else 0
                 cls.setVoltage(voltage, can_id)
                 cls.setCurrent(current, can_id)
         # Stop all modules not currently assigned
@@ -106,3 +107,19 @@ class ModuleMessage:
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[16, 3, 0, 0, 0] + currentvalue_hex)
         # print(f"[CAN] setCurrent: CAN_ID={hex(can_id)}, current={currentValue}, data={message.data}")
         cls.bus.send(message)
+
+# class SetterGetter:
+#     def __init__(self):
+#         pass
+
+#     def getGunVoltage(self, gunID):
+#         ModuleDataModel.set_module_data
+
+#     def setGunVoltage(self, gunID):
+#         pass
+
+#     def getGunCurrent(self, gunID):
+#         pass
+
+#     def setGunCurrent(self, gunID):
+#         pass

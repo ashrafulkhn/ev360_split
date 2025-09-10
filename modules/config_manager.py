@@ -1,7 +1,7 @@
 import configparser
 
 class ConfigManager:
-    def __init__(self, config_path="module_config.ini"):
+    def __init__(self, config_path="modules/module_config.ini"):
         self.config = configparser.ConfigParser()
         self.config.read(config_path)
 

@@ -7,6 +7,7 @@ Modular and scalable for multiple SECCs.
 import asyncio
 from pecc.utils import log_info, log_error
 from pecc.gun_session import GunSession, GunState
+from modules.module_handler import update_module
 
 class SECCConnectionHandler:
     def start_info_sender(self):
@@ -58,7 +59,7 @@ class SECCConnectionHandler:
                 if msg_type == "info":
                     # Log info kinds
                     if kind in ["event", "status", "evConnectionState", "chargingSession"]:
-                        log_info(f"Received info message from SECC {self.path}: kind={kind}, payload={payload}")
+                        # log_info(f"Received info message from SECC {self.path}: kind={kind}, payload={payload}")
                         # Track evConnectionState and update contactor
                         if kind == "evConnectionState" and self.server:
                             state = payload.get("evConnectionState")
@@ -85,9 +86,13 @@ class SECCConnectionHandler:
                     from config.gun_configs import gun_configs
                     config = gun_configs.get(self.gun_id, gun_configs.get(self.gun_id))
                     response_payload = config
+                    # Optionally update module assignment for configuration
+                    # update_module(self.gun_id, voltage or 0, current or 0, "configuration")
                 elif kind == "cableCheck":
                     voltage = payload.get("voltage")
                     # Implement cable check logic here
+                    # Update module assignment for cableCheck
+                    update_module(self.gun_id, voltage or 0, 0, "cablecheck")
                     voltage = await self.session.get_voltage_demand()
                     response_payload = {"cableCheckResult": "valid", "voltage": voltage}
                 elif kind == "targetValues":
@@ -99,6 +104,12 @@ class SECCConnectionHandler:
                         await self.session.set_current_demand(target_current)
                     if target_voltage is not None:
                         await self.session.set_voltage_demand(target_voltage)
+                    # Update module assignment for charging
+                    if charging_state in ["preCharge", "charge", "charging"]:
+                        update_module(self.gun_id, target_voltage or 0, target_current or 0, charging_state or "charging")
+                    else:
+                        update_module(self.gun_id, 0, 0, charging_state or "charging")
+
                     response_payload = {
                         "current_demand": await self.session.get_current_demand(),
                         "voltage_demand": await self.session.get_voltage_demand(),
@@ -111,6 +122,7 @@ class SECCConnectionHandler:
                     response_payload = {"contactorsStatus": status}
                 elif kind == "reset":
                     await self.session.transition_state(GunState.IDLE)
+                    update_module(self.gun_id, 0, 0, charging_state or "charging")
                     response_payload = {"state": str(await self.session.get_state())}
                 elif kind == "getInput":
                     input_ids = payload.get("inputIdentifiers", [])
@@ -122,6 +134,7 @@ class SECCConnectionHandler:
                     response_payload = {"outputStatus": "ok"}
                 elif kind == "stopCharging":
                     await self.session.transition_state(GunState.STOPPED)
+                    update_module(self.gun_id, 0, 0, charging_state or "charging")
                     response_payload = {"state": str(await self.session.get_state())}
                 else:
                     log_error(f"Unknown request kind from SECC {self.path}: {kind}")

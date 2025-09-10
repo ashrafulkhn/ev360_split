@@ -1,25 +1,33 @@
-from constants import CanId, assignedModules
-from message_helper import ModuleMessage as mm
+from modules.constants import CanId, assignedModules, ModuleDataModel
+from modules.message_helper import ModuleMessage as mm
 import threading
-from read_module.read_module_data import perform_action
+from modules.read_module.read_module_data import perform_action
 
-def update_module():
-    import time
-    from constants import CanId, assignedModules, TOTAL_GUN
-    gun_keys = [f"GUN{i+1}" for i in range(TOTAL_GUN)]
-    all_can_ids = [getattr(CanId, f"CAN_ID_{i+1}") for i in range(TOTAL_GUN)]
-    while True:
-        print("update_module thread running...")
-        # Static 1:1 mapping: GUN1->MODULE1, GUN2->MODULE2, ...
-        modules_per_gun = {gun: [can_id] for gun, can_id in zip(gun_keys, all_can_ids)}
-        assignedModules.module_list_per_gun = modules_per_gun
-        print(f"[STATIC TEST] Updated module assignments: {assignedModules.module_list_per_gun}")
-        time.sleep(30)   # Cycle every 60 Seconds to give some time to the modules to stabilise before reassignment.
+def update_module(gun_id, voltage, current, state):
+    from modules.constants import assignedModules, ModuleDataModel, CanId
+    # Only assign module if gun is active (cablecheck, precharge, charging) and demand > 0
+    if state in ["cablecheck", "preCharge", "charging"] and (voltage > 0 or current > 0):
+        module_num = int(gun_id.replace("GUN", ""))
+        can_id = getattr(CanId, f"CAN_ID_{module_num}")
+        assignedModules.module_list_per_gun[gun_id] = [can_id]
+        ModuleDataModel.set_module_data[f"MODULE{module_num}"]["VOLTAGE"] = voltage
+        ModuleDataModel.set_module_data[f"MODULE{module_num}"]["CURRENT"] = current
+        print(f"Assigned {gun_id} to MODULE{module_num} (CAN_ID={hex(can_id)}) with V={voltage} C={current}")
+        print(f"Assigned Modules: {assignedModules.module_list_per_gun}")
+        print(f"Assigned Modules Values: {ModuleDataModel.set_module_data}")
+    else:
+        assignedModules.module_list_per_gun[gun_id] = []
+        module_num = int(gun_id.replace("GUN", ""))
+        ModuleDataModel.set_module_data[f"MODULE{module_num}"]["VOLTAGE"] = 0
+        ModuleDataModel.set_module_data[f"MODULE{module_num}"]["CURRENT"] = 0
+        print(f"Cleared assignment for {gun_id} (inactive or zero demand)")
+        print(f"Assigned Modules: {assignedModules.module_list_per_gun}")
+        print(f"Assigned Modules Values: {ModuleDataModel.set_module_data}")
 
 def manage_modules():
     import time
-    from message_helper import ModuleMessage as mm
-    from constants import assignedModules
+    from modules.message_helper import ModuleMessage as mm
+    from modules.constants import assignedModules
     while True:
         print("manage_modules thread running...")
         mm.sync_active_modules()
