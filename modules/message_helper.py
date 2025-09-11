@@ -61,6 +61,7 @@ class ModuleMessage:
     @classmethod
     def requestModule_Voltage(cls, can_id):
         #Add voltage request
+        print("Requesting Module Voltage.")
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[
             18, 98, 0, 0, 0, 0, 0, 0])
         # print(f"[CAN] requestModule_Voltage: CAN_ID={hex(can_id)}, data={message.data}")
@@ -68,6 +69,7 @@ class ModuleMessage:
 
     @classmethod
     def requestModule_Current(cls, can_id):
+        print("Requesting Module Current.")
         # add current request value
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[
             18, 48, 0, 0, 0, 0, 0, 0])
@@ -75,6 +77,7 @@ class ModuleMessage:
         cls.bus.send(message)
     @classmethod
     def requestModule_Temperature(cls, can_id):
+        print("Requesting Module Temperature.")
         # add current request value
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[
             18, 30, 0, 0, 0, 0, 0, 0])
