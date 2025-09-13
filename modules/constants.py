@@ -1,4 +1,4 @@
-from config_manager import ConfigManager
+from modules.config_manager import ConfigManager
 
 config = ConfigManager()
 
@@ -10,21 +10,6 @@ TOTAL_MODULE = config.get_total_modules()
 
 class CanId:
     # # CAN IDs for Sending Message to Power Modules.
-    # Default, Which was working earlier
-    # CAN_ID_1 = 0x02204000
-    # CAN_ID_2 = 0x02208000
-    # CAN_ID_3 = 0x0220C000
-    # CAN_ID_4 = 0x02210000
-    # CAN_ID_5 = 0x02214000
-    # CAN_ID_6 = 0x02218000
-    # CAN_ID_7 = 0x0221C000
-    # CAN_ID_8 = 0x02220000
-    # CAN_ID_9 = 0x02224000
-    # CAN_ID_10 = 0x02228000
-    # CAN_ID_11 = 0x0222C000
-    # CAN_ID_12 = 0x02230000
-    
-    # New IDs
     CAN_ID_1  = 0x02204000
     CAN_ID_2  = 0x02208000
     CAN_ID_3  = 0x0220C000
@@ -37,8 +22,6 @@ class CanId:
     CAN_ID_10 = 0x02228000
     CAN_ID_11 = 0x0222C000
     CAN_ID_12 = 0x02230000
-
-    
     
     # CAN IDs for recieving Message from Power Modules are Extracted from the Serial Number of the Modules
     DIGITAL_OUT1 = 0xD00
@@ -49,55 +32,63 @@ class CanId:
     DIGITAL_OUT6 = 0x130
 
 class ModuleDataModel:
-    module_data = {
-        "MODULE1": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
-        },
-        "MODULE2": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
-        },
-        "MODULE3": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
-        },
-        "MODULE4": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
-        },
-        "MODULE5": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
-        },
-        "MODULE6": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
-        },
-        "MODULE7": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
-        },
-        "MODULE8": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
-        },
-        "MODULE9": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
-        },
-        "MODULE10": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
-        },
-        "MODULE11": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
-        },
-        "MODULE12": {
-            "VOLTAGE" : 600,
-            "CURRENT" : 10,
-        }
+    # set_module_data = {
+    #     "MODULE1": {
+    #         "VOLTAGE" : 600,
+    #         "CURRENT" : 10,
+    #     },
+    #     "MODULE2": {
+    #         "VOLTAGE" : 600,
+    #         "CURRENT" : 10,
+    #     },
+    #     "MODULE3": {
+    #         "VOLTAGE" : 600,
+    #         "CURRENT" : 10,
+    #     },
+    #     "MODULE4": {
+    #         "VOLTAGE" : 600,
+    #         "CURRENT" : 10,
+    #     },
+    #     "MODULE5": {
+    #         "VOLTAGE" : 600,
+    #         "CURRENT" : 10,
+    #     },
+    #     "MODULE6": {
+    #         "VOLTAGE" : 600,
+    #         "CURRENT" : 10,
+    #     },
+    #     "MODULE7": {
+    #         "VOLTAGE" : 600,
+    #         "CURRENT" : 10,
+    #     },
+    #     "MODULE8": {
+    #         "VOLTAGE" : 600,
+    #         "CURRENT" : 10,
+    #     },
+    #     "MODULE9": {
+    #         "VOLTAGE" : 600,
+    #         "CURRENT" : 10,
+    #     },
+    #     "MODULE10": {
+    #         "VOLTAGE" : 600,
+    #         "CURRENT" : 10,
+    #     },
+    #     "MODULE11": {
+    #         "VOLTAGE" : 600,
+    #         "CURRENT" : 10,
+    #     },
+    #     "MODULE12": {
+    #         "VOLTAGE" : 600,
+    #         "CURRENT" : 10,
+    #     }
+    # }
+
+    # # Dynamically initialize read_module_data for all modules
+    set_module_data = {
+        f"MODULE{i+1}": {
+            "VOLTAGE": 0,
+            "CURRENT": 0,
+        } for i in range(TOTAL_MODULE)
     }
 
     # Dynamically initialize read_module_data for all modules

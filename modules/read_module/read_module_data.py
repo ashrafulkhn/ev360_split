@@ -1,5 +1,5 @@
-from caninterface import CanInterface
-from factory_reader import FactoryReader
+from modules.caninterface import CanInterface
+from modules.factory_reader import FactoryReader
 
 def readAllCanData(d):
     reader = FactoryReader.create_reader(d.arbitration_id,d.data)

@@ -1,138 +1,39 @@
+from modules.constants  import *
+
 class InfoData:
     @staticmethod
     def get_gun_info(gun_id):
-        gun_map = {
-            "GUN1": InfoData.gun1_info_data,
-            "GUN2": InfoData.gun2_info_data,
-            "GUN3": InfoData.gun3_info_data,
-            "GUN4": InfoData.gun4_info_data,
-            "GUN5": InfoData.gun5_info_data,
-            "GUN6": InfoData.gun6_info_data,
-            "GUN7": InfoData.gun7_info_data,
-            "GUN8": InfoData.gun8_info_data,
-            "GUN9": InfoData.gun9_info_data,
-            "GUN10": InfoData.gun10_info_data,
-            "GUN11": InfoData.gun11_info_data,
-            "GUN12": InfoData.gun12_info_data,
-        }
-        return gun_map.get(gun_id.upper(), {})
-    gun1_info_data = {
-        "measuredVoltage":  0,
-        "measuredCurrent":  0,
-        "drivenVoltage":  0,
-        "drivenCurrent":  0,
-        "temperature": 32.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
-        "operationalStatus": "operative"
-        }
-    gun2_info_data = {
-        "measuredVoltage":  0,
-        "measuredCurrent":  0,
-        "drivenVoltage":  0,
-        "drivenCurrent":  0,
-        "temperature": 33.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
-        "operationalStatus": "operative"
-        }
-    gun3_info_data = {
-        "measuredVoltage":  0,
-        "measuredCurrent":  0,
-        "drivenVoltage":  0,
-        "drivenCurrent":  0,
-        "temperature": 34.0,
-        "contactorsStatus": "closed",
-        "isolationStatus": "valid",
-        "operationalStatus": "operative"
-        }
-    gun4_info_data = {
-        "measuredVoltage":  0,
-        "measuredCurrent":  0,
-        "drivenVoltage":  0,
-        "drivenCurrent":  0,
-        "temperature": 35.0,
-        "contactorsStatus": "closed",
-        "isolationStatus": "valid",
-        "operationalStatus": "operative"
-        }
-    gun5_info_data = {
-        "measuredVoltage":  0,
-        "measuredCurrent":  0,
-        "drivenVoltage":  0,
-        "drivenCurrent":  0,
-        "temperature": 36.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
-        "operationalStatus": "operative"
-        }
-    gun6_info_data = {
-        "measuredVoltage":  0,
-        "measuredCurrent":  0,
-        "drivenVoltage":  0,
-        "drivenCurrent":  0,
-        "temperature": 37.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
-        "operationalStatus": "operative"
-        }
-    gun7_info_data = {
-        "measuredVoltage":  0,
-        "measuredCurrent":  0,
-        "drivenVoltage":  0,
-        "drivenCurrent":  0,
-        "temperature": 38.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
-        "operationalStatus": "operative"
-        }
-    gun8_info_data = {
-        "measuredVoltage":  0,
-        "measuredCurrent":  0,
-        "drivenVoltage":  0,
-        "drivenCurrent":  0,
-        "temperature": 39.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
-        "operationalStatus": "operative"
-        }
-    gun9_info_data = {
-        "measuredVoltage":  0,
-        "measuredCurrent":  0,
-        "drivenVoltage":  0,
-        "drivenCurrent":  0,
-        "temperature": 40.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
-        "operationalStatus": "operative"
-        }
-    gun10_info_data = {
-        "measuredVoltage":  0,
-        "measuredCurrent":  0,
-        "drivenVoltage":  0,
-        "drivenCurrent":  0,
-        "temperature": 41.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
-        "operationalStatus": "operative"
-        }
-    gun11_info_data = {
-        "measuredVoltage":  0,
-        "measuredCurrent":  0,
-        "drivenVoltage":  0,
-        "drivenCurrent":  0,
-        "temperature": 42.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
-        "operationalStatus": "operative"
-        }
-    gun12_info_data = {
-        "measuredVoltage":  0,
-        "measuredCurrent":  0,
-        "drivenVoltage":  0,
-        "drivenCurrent":  0,
-        "temperature": 43.0,
-        "contactorsStatus": "open",
-        "isolationStatus": "invalid",
-        "operationalStatus": "operative"
+        from modules.constants import assignedModules, ModuleDataModel
+        module_ids = assignedModules.module_list_per_gun.get(gun_id, [])
+        voltages = []
+        currents = []
+        temperatures = []
+        for can_id in module_ids:
+            # Map CAN ID to module number
+            module_num = None
+            for i in range(1, ModuleDataModel.read_module_data.__len__() + 1):
+                expected_can_id = getattr(CanId, f"CAN_ID_{i}", None)
+                if expected_can_id == can_id:
+                    module_num = i
+                    break
+            if module_num:
+                module_key = f"MODULE{module_num}"
+                data = ModuleDataModel.read_module_data.get(module_key, {})
+                voltages.append(data.get("VOLTAGE", 0))
+                currents.append(data.get("CURRENT", 0))
+                temperatures.append(data.get("TEMPERATURE", 0))
+        # Aggregate: sum current, pick first voltage, average temperature
+        measured_voltage = voltages[0] if voltages else 0
+        measured_current = sum(currents) if currents else 0
+        temperature = sum(temperatures) / len(temperatures) if temperatures else 0
+        # You can add more fields as needed
+        return {
+            "measuredVoltage": measured_voltage,
+            "measuredCurrent": measured_current,
+            "drivenVoltage": 0,
+            "drivenCurrent": 0,
+            "temperature": temperature,
+            "contactorsStatus": "open",
+            "isolationStatus": "valid",
+            "operationalStatus": "operative"
         }
