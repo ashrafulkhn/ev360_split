@@ -55,7 +55,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax":  250,
         "limitPowerMin": 0,
-        "limitPowerMax": 120000,
+        "limitPowerMax": 10000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
