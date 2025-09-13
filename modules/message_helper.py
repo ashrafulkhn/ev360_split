@@ -5,8 +5,8 @@ from modules.utility import DTH
 import threading
 import time
 
-
 class ModuleMessage:
+    previous_active_can_ids = set()
     bus = CanInterface.bus_instance
     # module_list = []
 
@@ -45,9 +45,11 @@ class ModuleMessage:
                 current = ModuleDataModel.set_module_data[module_name]["CURRENT"] if module_name else 0
                 cls.setVoltage(voltage, can_id)
                 cls.setCurrent(current, can_id)
-        # Stop all modules not currently assigned
-        for can_id in set(all_can_ids) - current_active:
+        # Send STOP only to modules removed from active list (at the end)
+        removed_modules = cls.previous_active_can_ids - current_active
+        for can_id in removed_modules:
             cls.setModule("STOP", can_id)
+        cls.previous_active_can_ids = set(current_active)
 
     @classmethod
     def set_high_low_Mode(cls, can_id, voltage):
@@ -91,7 +93,7 @@ class ModuleMessage:
         # STOP = 1
 
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[
-            16, 4, 0, 0, 0, 0, 0, (0 if action == "START" else 1)])                                              # b2=0-startModule, b2=1 -stopModule
+            16, 4, 0, 0, 0, 0, 0, (0 if action == "START" else 1)])   # b2=0-startModule, b2=1 -stopModule
         # print(f"[CAN] setModule: CAN_ID={hex(can_id)}, action={action}, data={message.data}")
         cls.bus.send(message)
 
@@ -110,19 +112,3 @@ class ModuleMessage:
         message = can.Message(arbitration_id=can_id, is_extended_id=True, data=[16, 3, 0, 0, 0] + currentvalue_hex)
         # print(f"[CAN] setCurrent: CAN_ID={hex(can_id)}, current={currentValue}, data={message.data}")
         cls.bus.send(message)
-
-# class SetterGetter:
-#     def __init__(self):
-#         pass
-
-#     def getGunVoltage(self, gunID):
-#         ModuleDataModel.set_module_data
-
-#     def setGunVoltage(self, gunID):
-#         pass
-
-#     def getGunCurrent(self, gunID):
-#         pass
-
-#     def setGunCurrent(self, gunID):
-#         pass

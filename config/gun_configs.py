@@ -55,7 +55,7 @@ gun_configs = {
         "limitCurrentMin": 0,
         "limitCurrentMax":  250,
         "limitPowerMin": 0,
-        "limitPowerMax": 120000,
+        "limitPowerMax": 10000,
         "limitDischargeCurrentMin": 0,
         "limitDischargeCurrentMax": -40,
         "limitDischargePowerMin": 0,
@@ -183,20 +183,3 @@ gun_configs = {
         "floatValues": True
     },
 }
-
-
-# class communication_model:
-#     {"info": {
-#         "request": {
-#             "configuration" : gun_configs.get("GUN12"),
-#             "cablecheck"    : {},
-#             "targetVAlue"    : {
-#                 "targetVoltage" : DATA_MODEL.getVolatge("GUN1"),
-#             },
-#         }
-#     },
-#         "response": {
-#             "configuration" : gun_configs.get("GUN12"),
-#             "cablecheck"    : {},
-#         }
-#     }
